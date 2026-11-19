@@ -30,7 +30,7 @@ pub struct IngestOptions {
     pub data_dir: std::path::PathBuf,
     /// Season year.
     pub season: u16,
-    /// Levels to pull. MLB and Triple-A are the milestone 1 scope.
+    /// Levels to pull. MLB through Rookie share this path.
     pub levels: Vec<Level>,
 }
 

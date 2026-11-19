@@ -1,0 +1,90 @@
+{
+  "copyright": "Copyright 2026 MLB Advanced Media, L.P.  Use of any content on this page acknowledges agreement to the terms posted here http://gdx.mlb.com/components/copyright.txt",
+  "stats": [
+    {
+      "type": {
+        "displayName": "season"
+      },
+      "group": {
+        "displayName": "hitting"
+      },
+      "totalSplits": 772,
+      "exemptions": [],
+      "splits": [
+        {
+          "season": "2025",
+          "stat": {
+            "age": 19,
+            "gamesPlayed": 1,
+            "groundOuts": 0,
+            "airOuts": 0,
+            "runs": 0,
+            "doubles": 0,
+            "triples": 0,
+            "homeRuns": 0,
+            "strikeOuts": 0,
+            "baseOnBalls": 0,
+            "intentionalWalks": 0,
+            "hits": 1,
+            "hitByPitch": 0,
+            "avg": "1.000",
+            "atBats": 1,
+            "obp": "1.000",
+            "slg": "1.000",
+            "ops": "2.000",
+            "caughtStealing": 0,
+            "stolenBases": 0,
+            "stolenBasePercentage": ".---",
+            "caughtStealingPercentage": ".---",
+            "groundIntoDoublePlay": 0,
+            "numberOfPitches": 7,
+            "plateAppearances": 1,
+            "totalBases": 1,
+            "rbi": 0,
+            "leftOnBase": 0,
+            "sacBunts": 0,
+            "sacFlies": 0,
+            "babip": "1.000",
+            "groundOutsToAirouts": "-.--",
+            "catchersInterference": 0,
+            "atBatsPerHomeRun": "-.--"
+          },
+          "team": {
+            "id": 540,
+            "name": "Frisco RoughRiders",
+            "link": "/api/v1/teams/540"
+          },
+          "player": {
+            "id": 808368,
+            "fullName": "Juan Sulbaran",
+            "link": "/api/v1/people/808368",
+            "firstName": "Juan",
+            "lastName": "Sulbaran",
+            "nameSlug": "juan-sulbaran-808368"
+          },
+          "league": {
+            "id": 109,
+            "name": "TEX",
+            "link": "/api/v1/league/109"
+          },
+          "sport": {
+            "id": 12,
+            "link": "/api/v1/sports/12",
+            "abbreviation": "AA"
+          },
+          "numTeams": 1,
+          "rank": 1,
+          "position": {
+            "code": "X",
+            "name": "Unknown",
+            "type": "Unknown",
+            "abbreviation": "X"
+          }
+        }
+      ],
+      "splitsTiedWithOffset": [],
+      "splitsTiedWithLimit": [],
+      "playerPool": "ALL"
+    }
+  ]
+}

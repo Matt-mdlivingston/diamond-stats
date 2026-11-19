@@ -1,0 +1,175 @@
+{
+  "copyright": "Copyright 2026 MLB Advanced Media, L.P.  Use of any content on this page acknowledges agreement to the terms posted here http://gdx.mlb.com/components/copyright.txt",
+  "allPlays": [
+    {
+      "result": {
+        "type": "atBat",
+        "event": "Lineout",
+        "eventType": "field_out",
+        "description": "Colt Keith lines out to left fielder Christopher Morel.",
+        "rbi": 0,
+        "awayScore": 0,
+        "homeScore": 0,
+        "isOut": true
+      },
+      "about": {
+        "atBatIndex": 0,
+        "halfInning": "top",
+        "inning": 1,
+        "isComplete": true,
+        "isScoringPlay": false,
+        "isTopInning": true,
+        "startTime": "2025-06-21T16:10:41.276Z",
+        "endTime": "2025-06-21T16:13:03.978Z"
+      },
+      "matchup": {
+        "batter": {
+          "id": 690993,
+          "fullName": "Colt Keith",
+          "link": "/api/v1/people/690993",
+          "nameSlug": "colt-keith-690993"
+        },
+        "batSide": {
+          "code": "L",
+          "description": "Left"
+        },
+        "pitcher": {
+          "id": 686752,
+          "fullName": "Ryan Pepiot",
+          "link": "/api/v1/people/686752",
+          "nameSlug": "ryan-pepiot-686752"
+        },
+        "pitchHand": {
+          "code": "R",
+          "description": "Right"
+        },
+        "batterHotColdZones": [],
+        "pitcherHotColdZones": [],
+        "splits": {
+          "batter": "vs_RHP",
+          "pitcher": "vs_LHB",
+          "menOnBase": "Empty"
+        }
+      },
+      "playEvents": [
+        {
+          "details": {
+            "call": {
+              "code": "C",
+              "description": "Called Strike"
+            },
+            "description": "Called Strike",
+            "code": "C",
+            "ballColor": "rgba(170, 21, 11, 1.0)",
+            "trailColor": "rgba(188, 0, 33, 1.0)",
+            "isInPlay": false,
+            "isStrike": true,
+            "isBall": false,
+            "type": {
+              "code": "FF",
+              "description": "Four-Seam Fastball"
+            },
+            "isOut": false,
+            "hasReview": false
+          },
+          "count": {
+            "balls": 0,
+            "strikes": 1,
+            "outs": 0
+          },
+          "pitchData": {
+            "startSpeed": 94.0,
+            "endSpeed": 86.4,
+            "strikeZoneTop": 3.3301797200192,
+            "strikeZoneBottom": 1.62612729168649
+          },
+          "index": 3,
+          "playId": "e8c8cbf5-4a35-39ed-9c89-e60e907d8067",
+          "pitchNumber": 1,
+          "startTime": "2025-06-21T16:10:43.574Z",
+          "endTime": "2025-06-21T16:10:46.574Z",
+          "isPitch": true,
+          "type": "pitch"
+        },
+        {
+          "details": {
+            "call": {
+              "code": "B",
+              "description": "Ball"
+            },
+            "description": "Ball",
+            "code": "B",
+            "ballColor": "rgba(39, 161, 39, 1.0)",
+            "trailColor": "rgba(0, 0, 254, 1.0)",
+            "isInPlay": false,
+            "isStrike": false,
+            "isBall": true,
+            "type": {
+              "code": "SL",
+              "description": "Slider"
+            },
+            "isOut": false,
+            "hasReview": false
+          },
+          "count": {
+            "balls": 1,
+            "strikes": 1,
+            "outs": 0
+          },
+          "pitchData": {
+            "startSpeed": 91.9,
+            "endSpeed": 84.7,
+            "strikeZoneTop": 3.41446357770989,
+            "strikeZoneBottom": 1.59257513167484
+          },
+          "index": 4,
+          "playId": "e8114c3f-7185-3bbf-b08d-1f410779b753",
+          "pitchNumber": 2,
+          "startTime": "2025-06-21T16:10:57.785Z",
+          "endTime": "2025-06-21T16:11:00.785Z",
+          "isPitch": true,
+          "type": "pitch"
+        },
+        {
+          "details": {
+            "call": {
+              "code": "B",
+              "description": "Ball"
+            },
+            "description": "Ball",
+            "code": "B",
+            "ballColor": "rgba(39, 161, 39, 1.0)",
+            "trailColor": "rgba(0, 85, 254, 1.0)",
+            "isInPlay": false,
+            "isStrike": false,
+            "isBall": true,
+            "type": {
+              "code": "CH",
+              "description": "Changeup"
+            },
+            "isOut": false,
+            "hasReview": false
+          },
+          "count": {
+            "balls": 2,
+            "strikes": 1,
+            "outs": 0
+          },
+          "pitchData": {
+            "startSpeed": 86.2,
+            "endSpeed": 79.6,
+            "strikeZoneTop": 3.24999957394472,
+            "strikeZoneBottom": 1.54837720425994
+          },
+          "index": 5,
+          "playId": "1ffef609-dd25-3aa8-a58d-10b1b7663025",
+          "pitchNumber": 3,
+          "startTime": "2025-06-21T16:11:14.822Z",
+          "endTime": "2025-06-21T16:11:17.822Z",
+          "isPitch": true,
+          "type": "pitch"
+        }
+      ]
+    }
+  ]
+}

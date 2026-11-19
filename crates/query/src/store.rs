@@ -55,6 +55,18 @@ pub struct LeaderRow {
     pub innings_pitched: Option<String>,
 }
 
+/// Optional season and level limits for a player's stints.
+///
+/// Omit both for every ingested stint. A season without a level is the
+/// cross-level view of that year.
+#[derive(Debug, Clone, Copy, Default)]
+pub struct SeasonFilter {
+    /// Keep this season only.
+    pub season: Option<u16>,
+    /// Keep this level only.
+    pub level: Option<Level>,
+}
+
 /// Every stint on file for one player.
 #[derive(Debug, Clone)]
 pub struct PlayerSeasons {
@@ -130,6 +142,37 @@ impl StatsStore {
 
     /// Stints for one player at every ingested level.
     pub fn player_seasons(&self, player_id: u32) -> Result<PlayerSeasons, QueryError> {
+        self.player_seasons_filtered(player_id, SeasonFilter::default())
+    }
+
+    /// Stints for one player, optionally limited to a season and a level.
+    ///
+    /// Level is a filter, not a requirement. Leaving it unset returns every
+    /// level that has been ingested, which is the cross-level season view
+    /// when `season` is set.
+    pub fn player_seasons_filtered(
+        &self,
+        player_id: u32,
+        filter: SeasonFilter,
+    ) -> Result<PlayerSeasons, QueryError> {
+        let mut seasons = self.player_seasons_unfiltered(player_id)?;
+        if let Some(season) = filter.season {
+            seasons.batting.retain(|row| row.season == season);
+            seasons.pitching.retain(|row| row.season == season);
+        }
+        if let Some(level) = filter.level {
+            seasons.batting.retain(|row| row.level == level);
+            seasons.pitching.retain(|row| row.level == level);
+        }
+        seasons.player_name = seasons
+            .batting
+            .first()
+            .map(|row| row.player_name.clone())
+            .or_else(|| seasons.pitching.first().map(|row| row.player_name.clone()));
+        Ok(seasons)
+    }
+
+    fn player_seasons_unfiltered(&self, player_id: u32) -> Result<PlayerSeasons, QueryError> {
         let batting_present = dataset_has_files(&self.data_dir, "batting");
         let pitching_present = dataset_has_files(&self.data_dir, "pitching");
         if !batting_present && !pitching_present {
@@ -753,11 +796,11 @@ fn team_from_row(row: &Row<'_>) -> Result<Team, QueryError> {
     })
 }
 
-fn connect() -> Result<Connection, QueryError> {
+pub(crate) fn connect() -> Result<Connection, QueryError> {
     Ok(Connection::open_in_memory()?)
 }
 
-fn read_fn(path: &Path) -> Result<String, QueryError> {
+pub(crate) fn read_fn(path: &Path) -> Result<String, QueryError> {
     let text = path.to_string_lossy();
     if !paths::is_safe_sql_path(&text) {
         return Err(QueryError::UnsafePath);
@@ -783,7 +826,7 @@ fn require_partition(
     }
 }
 
-fn dataset_has_files(data_dir: &Path, dataset: &str) -> bool {
+pub(crate) fn dataset_has_files(data_dir: &Path, dataset: &str) -> bool {
     fn walk(dir: &Path) -> bool {
         let Ok(entries) = std::fs::read_dir(dir) else {
             return false;
@@ -802,11 +845,11 @@ fn dataset_has_files(data_dir: &Path, dataset: &str) -> bool {
     walk(&paths::parquet_root(data_dir).join(dataset))
 }
 
-fn parse_level(slug: &str) -> Result<Level, QueryError> {
+pub(crate) fn parse_level(slug: &str) -> Result<Level, QueryError> {
     Level::parse(slug).map_err(|err| QueryError::Message(err.to_string()))
 }
 
-fn get_u32(row: &Row<'_>, idx: usize) -> Result<u32, QueryError> {
+pub(crate) fn get_u32(row: &Row<'_>, idx: usize) -> Result<u32, QueryError> {
     if let Ok(value) = row.get::<_, i32>(idx) {
         return u32::try_from(value).map_err(|err| QueryError::Message(err.to_string()));
     }
@@ -817,7 +860,7 @@ fn get_u32(row: &Row<'_>, idx: usize) -> Result<u32, QueryError> {
     u32::try_from(value).map_err(|err| QueryError::Message(err.to_string()))
 }
 
-fn get_opt_u32(row: &Row<'_>, idx: usize) -> Result<Option<u32>, QueryError> {
+pub(crate) fn get_opt_u32(row: &Row<'_>, idx: usize) -> Result<Option<u32>, QueryError> {
     if let Ok(value) = row.get::<_, Option<i32>>(idx) {
         return value
             .map(|number| u32::try_from(number).map_err(|err| QueryError::Message(err.to_string())))
@@ -834,12 +877,12 @@ fn get_opt_u32(row: &Row<'_>, idx: usize) -> Result<Option<u32>, QueryError> {
         .transpose()
 }
 
-fn get_u16(row: &Row<'_>, idx: usize) -> Result<u16, QueryError> {
+pub(crate) fn get_u16(row: &Row<'_>, idx: usize) -> Result<u16, QueryError> {
     let value = get_u32(row, idx)?;
     u16::try_from(value).map_err(|err| QueryError::Message(err.to_string()))
 }
 
-fn get_u64(row: &Row<'_>, idx: usize) -> Result<u64, QueryError> {
+pub(crate) fn get_u64(row: &Row<'_>, idx: usize) -> Result<u64, QueryError> {
     if let Ok(value) = row.get::<_, i64>(idx) {
         return u64::try_from(value).map_err(|err| QueryError::Message(err.to_string()));
     }

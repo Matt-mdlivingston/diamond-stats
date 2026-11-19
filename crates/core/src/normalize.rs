@@ -409,7 +409,7 @@ fn check_context(split: &StatSplit, ctx: NormalizeCtx) -> Result<(), CoreError> 
     Ok(())
 }
 
-fn resolve_outs(stat: &crate::api_model::RawStat) -> Result<u32, CoreError> {
+pub(crate) fn resolve_outs(stat: &crate::api_model::RawStat) -> Result<u32, CoreError> {
     let from_field = stat.outs.0;
     let from_notation = match &stat.innings_pitched {
         Some(raw) => Some(Innings::parse(raw)?.outs()),

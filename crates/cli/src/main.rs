@@ -7,7 +7,9 @@ use std::process::ExitCode;
 use clap::{Parser, Subcommand};
 use diamond_stats_api::serve;
 use diamond_stats_core::Level;
-use diamond_stats_ingest::{ClientConfig, HttpStatsClient, IngestOptions, ingest};
+use diamond_stats_ingest::{
+    ClientConfig, DateGamesOptions, HttpStatsClient, IngestOptions, ingest, ingest_games,
+};
 use tracing_subscriber::EnvFilter;
 
 #[derive(Debug, Parser)]
@@ -31,12 +33,35 @@ enum Command {
         /// Season year, for example 2025.
         #[arg(long)]
         season: u16,
-        /// Levels to ingest, comma-separated: mlb,aaa,aa,high_a,single_a,rookie.
+        /// Levels to ingest, comma-separated: mlb, aaa, aa, high_a, single_a, rookie.
         #[arg(long, value_delimiter = ',')]
         level: Vec<String>,
         /// Directory for the raw JSON cache and Parquet output.
         #[arg(long, default_value = "data")]
         data_dir: PathBuf,
+    },
+    /// Fetch one date's schedule and, for final games, the box score and play-by-play.
+    ///
+    /// Postponed games are stored on the schedule and not downloaded. `--limit`
+    /// caps how many final games are fetched. Omit it to fetch every final game
+    /// that day. The raw JSON is cached under the data directory.
+    IngestGames {
+        /// Season year, for example 2025.
+        #[arg(long)]
+        season: u16,
+        /// Levels, comma-separated: mlb, aaa, aa, high_a, single_a, rookie.
+        #[arg(long, value_delimiter = ',')]
+        level: Vec<String>,
+        /// Schedule date, YYYY-MM-DD.
+        #[arg(long)]
+        date: String,
+        /// Directory for the raw JSON cache and Parquet output.
+        #[arg(long, default_value = "data")]
+        data_dir: PathBuf,
+        /// How many final games to download box scores and play-by-play for.
+        /// Omit to download every final game on the date.
+        #[arg(long)]
+        limit: Option<u32>,
     },
     /// Serve the HTTP API on loopback. Logs are JSON.
     Serve {
@@ -70,7 +95,9 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
         } => {
             init_tracing(false);
             if level.is_empty() {
-                return Err("pass --level mlb,aaa (or another known level)".into());
+                return Err(
+                    "pass --level mlb,aaa,aa,high_a,single_a,rookie (or any subset)".into(),
+                );
             }
             let mut levels = Vec::with_capacity(level.len());
             for token in &level {
@@ -101,6 +128,52 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
                 );
             }
             println!("game logs are fetched on the first /v1/players/{{id}}/gamelog request");
+        }
+        Command::IngestGames {
+            season,
+            level,
+            date,
+            data_dir,
+            limit,
+        } => {
+            init_tracing(false);
+            if level.is_empty() {
+                return Err("pass --level mlb (or aaa, aa, high_a, single_a, rookie)".into());
+            }
+            let client = HttpStatsClient::new(ClientConfig::new(&data_dir))?;
+            for token in &level {
+                let parsed = Level::parse(token).map_err(|err| err.to_string())?;
+                let summary = ingest_games(
+                    &client,
+                    &DateGamesOptions {
+                        data_dir: data_dir.clone(),
+                        season,
+                        level: parsed,
+                        date: date.clone(),
+                        box_limit: limit,
+                    },
+                )
+                .await?;
+                println!(
+                    "schedule {date} {level}: {} games ({} final), wrote box scores and play-by-play for {}",
+                    summary.games,
+                    summary.final_games,
+                    summary.fetched.len(),
+                    level = summary.level
+                );
+                for game in &summary.fetched {
+                    println!(
+                        "  game {}: {} batting lines, {} pitching lines, {} plate appearances, {} pitches ({} with velocity, {} with pitch type)",
+                        game.game_pk,
+                        game.batting_lines,
+                        game.pitching_lines,
+                        game.plate_appearances,
+                        game.pitches,
+                        game.pitches_with_velocity,
+                        game.pitches_with_pitch_type
+                    );
+                }
+            }
         }
         Command::Serve { bind, data_dir } => {
             init_tracing(true);

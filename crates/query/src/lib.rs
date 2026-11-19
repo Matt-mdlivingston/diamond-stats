@@ -8,7 +8,11 @@
 #![warn(missing_docs)]
 
 mod error;
+mod games;
 mod store;
 
 pub use error::QueryError;
-pub use store::{GameLogLoad, LeaderRequest, LeaderRow, PlayerSeasons, Roster, StatsStore};
+pub use games::{BoxScore, MatchupRequest, PlayFeed, ScheduleLoad};
+pub use store::{
+    GameLogLoad, LeaderRequest, LeaderRow, PlayerSeasons, Roster, SeasonFilter, StatsStore,
+};

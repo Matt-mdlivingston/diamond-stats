@@ -1,0 +1,157 @@
+{
+  "copyright": "Copyright 2026 MLB Advanced Media, L.P.  Use of any content on this page acknowledges agreement to the terms posted here http://gdx.mlb.com/components/copyright.txt",
+  "allPlays": [
+    {
+      "result": {
+        "type": "atBat",
+        "event": "Triple",
+        "eventType": "triple",
+        "description": "Héctor Rodríguez triples (3) on a sharp fly ball to center fielder Nelson Rada.",
+        "rbi": 0,
+        "awayScore": 0,
+        "homeScore": 0,
+        "isOut": false
+      },
+      "about": {
+        "atBatIndex": 0,
+        "halfInning": "top",
+        "inning": 1,
+        "isComplete": true,
+        "isScoringPlay": false,
+        "isTopInning": true,
+        "startTime": "2025-06-21T21:07:00.286Z",
+        "endTime": "2025-06-21T21:08:37.132Z"
+      },
+      "matchup": {
+        "batter": {
+          "id": 699302,
+          "fullName": "Héctor Rodríguez",
+          "link": "/api/v1/people/699302",
+          "nameSlug": "hector-rodriguez-699302"
+        },
+        "batSide": {
+          "code": "L",
+          "description": "Left"
+        },
+        "pitcher": {
+          "id": 691951,
+          "fullName": "Sam Aldegheri",
+          "link": "/api/v1/people/691951",
+          "nameSlug": "sam-aldegheri-691951"
+        },
+        "pitchHand": {
+          "code": "L",
+          "description": "Left"
+        },
+        "postOnThird": {
+          "id": 699302,
+          "fullName": "Héctor Rodríguez",
+          "link": "/api/v1/people/699302",
+          "nameSlug": "hector-rodriguez-699302"
+        },
+        "batterHotColdZones": [],
+        "pitcherHotColdZones": [],
+        "splits": {
+          "batter": "vs_LHP",
+          "pitcher": "vs_LHB",
+          "menOnBase": "RISP"
+        }
+      },
+      "playEvents": [
+        {
+          "details": {
+            "call": {
+              "code": "F",
+              "description": "Foul"
+            },
+            "description": "Foul",
+            "code": "F",
+            "isInPlay": false,
+            "isStrike": true,
+            "isBall": false,
+            "isOut": false,
+            "hasReview": false
+          },
+          "count": {
+            "balls": 0,
+            "strikes": 1,
+            "outs": 0
+          },
+          "pitchData": {
+            "strikeZoneTop": 3.301,
+            "strikeZoneBottom": 1.504
+          },
+          "index": 3,
+          "playId": "588546c2-9d78-3c46-b2ca-8353cdae4179",
+          "pitchNumber": 1,
+          "startTime": "2025-06-21T21:07:02.498Z",
+          "endTime": "2025-06-21T21:07:08.498Z",
+          "isPitch": true,
+          "type": "pitch"
+        },
+        {
+          "details": {
+            "call": {
+              "code": "F",
+              "description": "Foul"
+            },
+            "description": "Foul",
+            "code": "F",
+            "isInPlay": false,
+            "isStrike": true,
+            "isBall": false,
+            "isOut": false,
+            "hasReview": false
+          },
+          "count": {
+            "balls": 0,
+            "strikes": 2,
+            "outs": 0
+          },
+          "pitchData": {
+            "strikeZoneTop": 3.301,
+            "strikeZoneBottom": 1.504
+          },
+          "index": 4,
+          "playId": "18c90508-a7e2-3296-b08f-223cd935a384",
+          "pitchNumber": 2,
+          "startTime": "2025-06-21T21:07:18.594Z",
+          "endTime": "2025-06-21T21:07:24.594Z",
+          "isPitch": true,
+          "type": "pitch"
+        },
+        {
+          "details": {
+            "call": {
+              "code": "F",
+              "description": "Foul"
+            },
+            "description": "Foul",
+            "code": "F",
+            "isInPlay": false,
+            "isStrike": true,
+            "isBall": false,
+            "isOut": false,
+            "hasReview": false
+          },
+          "count": {
+            "balls": 0,
+            "strikes": 2,
+            "outs": 0
+          },
+          "pitchData": {
+            "strikeZoneTop": 3.301,
+            "strikeZoneBottom": 1.504
+          },
+          "index": 5,
+          "playId": "5794352e-4477-357b-b98c-1a9c88a31014",
+          "pitchNumber": 3,
+          "startTime": "2025-06-21T21:07:52.467Z",
+          "endTime": "2025-06-21T21:07:57.877Z",
+          "isPitch": true,
+          "type": "pitch"
+        }
+      ]
+    }
+  ]
+}

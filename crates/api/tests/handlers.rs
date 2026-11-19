@@ -7,6 +7,7 @@ use std::sync::Arc;
 use axum::body::Body;
 use diamond_stats_api::{AppState, router};
 use diamond_stats_core::api_model::StatsEnvelope;
+use diamond_stats_core::game_api::{BoxscoreEnvelope, PlayByPlayEnvelope, ScheduleEnvelope};
 use diamond_stats_core::normalize::batting_stints;
 use diamond_stats_core::{Level, NormalizeCtx, StatGroup};
 use diamond_stats_ingest::{FixtureClient, PlayerQuery, write_batting};
@@ -110,6 +111,10 @@ async fn health_levels_and_openapi() {
         .collect();
     assert!(slugs.contains(&"mlb"));
     assert!(slugs.contains(&"aaa"));
+    assert!(slugs.contains(&"aa"));
+    assert!(slugs.contains(&"high_a"));
+    assert!(slugs.contains(&"single_a"));
+    assert!(slugs.contains(&"rookie"));
     assert!(!slugs.contains(&"minors"));
 
     let (status, body) = get(&app, "/api-docs/openapi.json").await;
@@ -117,6 +122,8 @@ async fn health_levels_and_openapi() {
     let text = body.to_string();
     assert!(text.contains("/v1/leaders"));
     assert!(text.contains("/v1/players/{player_id}/gamelog"));
+    assert!(text.contains("/v1/games/{game_pk}/plays"));
+    assert!(text.contains("/v1/matchups"));
 }
 
 #[tokio::test]
@@ -140,6 +147,17 @@ async fn seasons_cross_levels_and_errors_are_json() {
             .unwrap()
             .contains("copyright.txt")
     );
+
+    let (status, body) = get(&app, "/v1/players/701350/seasons?season=2025").await;
+    assert_eq!(status, http::StatusCode::OK);
+    assert_eq!(body["batting"].as_array().unwrap().len(), 2);
+    let (status, body) = get(&app, "/v1/players/701350/seasons?season=2025&level=mlb").await;
+    assert_eq!(status, http::StatusCode::OK);
+    assert_eq!(body["batting"].as_array().unwrap().len(), 1);
+    assert_eq!(body["batting"][0]["level"], "mlb");
+    let (status, body) = get(&app, "/v1/players/701350/seasons?level=aa").await;
+    assert_eq!(status, http::StatusCode::NOT_FOUND, "{body}");
+    assert_eq!(body["error"]["code"], "not_found");
 
     let (status, body) = get(&app, "/v1/players/1/seasons").await;
     assert_eq!(status, http::StatusCode::NOT_FOUND);
@@ -195,4 +213,90 @@ async fn gamelog_is_fetched_once_then_read_from_parquet() {
         )
         .is_file()
     );
+}
+
+#[tokio::test]
+async fn box_score_and_plays_are_fetched_once() {
+    let dir = tempfile::tempdir().unwrap();
+    let client = FixtureClient::new();
+    let schedule: ScheduleEnvelope =
+        serde_json::from_str(&fixture("schedule_mlb_2025-06-21_two.json")).unwrap();
+    client.insert_schedule_date(Level::Mlb.sport_id(), "2025-06-21", schedule);
+    client.insert_boxscore(
+        777_420,
+        serde_json::from_str::<BoxscoreEnvelope>(&fixture("boxscore_mlb_777420_trimmed.json"))
+            .unwrap(),
+    );
+    client.insert_plays(
+        777_420,
+        serde_json::from_str::<PlayByPlayEnvelope>(&fixture("playbyplay_mlb_777420_one_pa.json"))
+            .unwrap(),
+    );
+    let app = router(AppState {
+        data_dir: dir.path().to_path_buf(),
+        api: client.clone(),
+        materialize: Arc::new(Mutex::new(())),
+    });
+
+    let (status, body) = get(&app, "/v1/games?season=2025&level=mlb&date=2025-06-21").await;
+    assert_eq!(status, http::StatusCode::OK, "{body}");
+    assert_eq!(body["games"].as_array().unwrap().len(), 2);
+    assert_eq!(body["games"][0]["away_score"], 3);
+
+    let (status, body) = get(&app, "/v1/games/777420").await;
+    assert_eq!(status, http::StatusCode::OK, "{body}");
+    assert_eq!(body["boxscore_loaded"], true);
+    assert_eq!(body["game"]["home_team_name"], "Tampa Bay Rays");
+    let keith = body["batting"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|row| row["player_id"] == 690_993)
+        .unwrap();
+    assert_eq!(keith["at_bats"], 4);
+    assert_eq!(keith["hits"], 1);
+    assert_eq!(keith["avg"], 0.25);
+    let calls = client.calls().len();
+
+    let (status, _) = get(&app, "/v1/games/777420").await;
+    assert_eq!(status, http::StatusCode::OK);
+    assert_eq!(
+        client.calls().len(),
+        calls,
+        "box score must be read from parquet"
+    );
+
+    let (status, body) = get(&app, "/v1/games/777420/plays").await;
+    assert_eq!(status, http::StatusCode::OK, "{body}");
+    assert_eq!(body["plate_appearances"][0]["event"], "Lineout");
+    assert_eq!(
+        body["plate_appearances"][0]["pitches"][0]["start_speed"],
+        94.0
+    );
+    assert_eq!(
+        body["plate_appearances"][0]["pitches"][0]["pitch_type_code"],
+        "FF"
+    );
+    assert!(
+        body["pitch_tracking_note"]
+            .as_str()
+            .unwrap()
+            .contains("every pitch")
+    );
+    let calls = client.calls().len();
+    let (status, _) = get(&app, "/v1/games/777420/plays").await;
+    assert_eq!(status, http::StatusCode::OK);
+    assert_eq!(client.calls().len(), calls);
+
+    let (status, body) = get(
+        &app,
+        "/v1/matchups?season=2025&level=mlb&batter_id=690993&pitcher_id=686752",
+    )
+    .await;
+    assert_eq!(status, http::StatusCode::OK, "{body}");
+    assert_eq!(body["plate_appearances"].as_array().unwrap().len(), 1);
+    assert_eq!(body["plate_appearances"][0]["event"], "Lineout");
+
+    let (status, body) = get(&app, "/v1/matchups?season=2025&level=mlb").await;
+    assert_eq!(status, http::StatusCode::BAD_REQUEST, "{body}");
 }

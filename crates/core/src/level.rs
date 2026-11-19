@@ -47,8 +47,8 @@ pub struct LevelInfo {
 }
 
 impl Level {
-    /// Every level milestone 1 can name. Ingest of levels other than MLB and
-    /// Triple-A is the same code path; the milestone scope is what we run.
+    /// Every level diamond-stats ingests. MLB through Rookie use one code path;
+    /// `sportId` selects the level.
     pub const ALL: [Level; 6] = [
         Level::Mlb,
         Level::Aaa,

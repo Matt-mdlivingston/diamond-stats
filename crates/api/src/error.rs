@@ -78,7 +78,13 @@ impl From<QueryError> for ApiError {
                 "data_not_loaded",
                 error.to_string(),
             ),
-            QueryError::Message(message) if message.contains("limit") => Self::bad_request(message),
+            QueryError::Message(message)
+                if message.contains("limit")
+                    || message.contains("requires")
+                    || message.contains("date") =>
+            {
+                Self::bad_request(message)
+            }
             QueryError::UnsafePath => Self::bad_request("data directory path is not usable"),
             other => Self::internal(other.to_string()),
         }
@@ -88,6 +94,9 @@ impl From<QueryError> for ApiError {
 impl From<IngestError> for ApiError {
     fn from(error: IngestError) -> Self {
         match error {
+            IngestError::GameNotFound { game_pk } => {
+                Self::not_found(format!("no game {game_pk} in the stats API"))
+            }
             IngestError::Status { status: 404, .. } => {
                 Self::not_found("the stats API has no row for that request")
             }

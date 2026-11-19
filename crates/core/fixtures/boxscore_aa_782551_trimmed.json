@@ -1,0 +1,296 @@
+{
+  "copyright": "Copyright 2026 MLB Advanced Media, L.P.  Use of any content on this page acknowledges agreement to the terms posted here http://gdx.mlb.com/components/copyright.txt",
+  "teams": {
+    "away": {
+      "team": {
+        "id": 498,
+        "name": "Chattanooga Lookouts",
+        "sport": {
+          "id": 12,
+          "link": "/api/v1/sports/12",
+          "name": "Double-A"
+        }
+      },
+      "players": {
+        "ID699302": {
+          "person": {
+            "id": 699302,
+            "fullName": "Héctor Rodríguez",
+            "link": "/api/v1/people/699302",
+            "boxscoreName": "Rodríguez, H",
+            "nameSlug": "hector-rodriguez-699302"
+          },
+          "position": {
+            "code": "9",
+            "name": "Outfielder",
+            "type": "Outfielder",
+            "abbreviation": "RF"
+          },
+          "battingOrder": "100",
+          "stats": {
+            "batting": {
+              "summary": "2-4 | 3B, 2B, 2 R",
+              "gamesPlayed": 1,
+              "flyOuts": 0,
+              "groundOuts": 2,
+              "airOuts": 0,
+              "runs": 2,
+              "doubles": 1,
+              "triples": 1,
+              "homeRuns": 0,
+              "strikeOuts": 0,
+              "baseOnBalls": 0,
+              "intentionalWalks": 0,
+              "hits": 2,
+              "hitByPitch": 0,
+              "atBats": 4,
+              "caughtStealing": 0,
+              "stolenBases": 0,
+              "stolenBasePercentage": ".---",
+              "groundIntoDoublePlay": 0,
+              "groundIntoTriplePlay": 0,
+              "plateAppearances": 4,
+              "totalBases": 5,
+              "rbi": 0,
+              "leftOnBase": 1,
+              "sacBunts": 0,
+              "sacFlies": 0,
+              "catchersInterference": 0,
+              "pickoffs": 0,
+              "atBatsPerHomeRun": "-.--",
+              "popOuts": 0,
+              "lineOuts": 0
+            },
+            "pitching": {}
+          }
+        },
+        "ID674265": {
+          "person": {
+            "id": 674265,
+            "fullName": "Kevin Abel",
+            "link": "/api/v1/people/674265",
+            "boxscoreName": "Abel",
+            "nameSlug": "kevin-abel-674265"
+          },
+          "position": {
+            "code": "1",
+            "name": "Pitcher",
+            "type": "Pitcher",
+            "abbreviation": "P"
+          },
+          "battingOrder": null,
+          "stats": {
+            "batting": {},
+            "pitching": {
+              "summary": "4.0 IP, 2 ER, 4 K, 0 BB",
+              "gamesPlayed": 1,
+              "gamesStarted": 1,
+              "flyOuts": 1,
+              "groundOuts": 4,
+              "airOuts": 4,
+              "runs": 2,
+              "doubles": 0,
+              "triples": 0,
+              "homeRuns": 2,
+              "strikeOuts": 4,
+              "baseOnBalls": 0,
+              "intentionalWalks": 0,
+              "hits": 3,
+              "hitByPitch": 0,
+              "atBats": 15,
+              "caughtStealing": 0,
+              "stolenBases": 0,
+              "stolenBasePercentage": ".---",
+              "numberOfPitches": 61,
+              "inningsPitched": "4.0",
+              "wins": 0,
+              "losses": 0,
+              "saves": 0,
+              "saveOpportunities": 0,
+              "holds": 0,
+              "blownSaves": 0,
+              "earnedRuns": 2,
+              "battersFaced": 15,
+              "outs": 12,
+              "gamesPitched": 1,
+              "completeGames": 0,
+              "shutouts": 0,
+              "pitchesThrown": 61,
+              "balls": 18,
+              "strikes": 43,
+              "strikePercentage": ".700",
+              "hitBatsmen": 0,
+              "balks": 0,
+              "wildPitches": 0,
+              "pickoffs": 0,
+              "rbi": 2,
+              "gamesFinished": 0,
+              "runsScoredPer9": "4.50",
+              "homeRunsPer9": "4.50",
+              "inheritedRunners": 0,
+              "inheritedRunnersScored": 0,
+              "catchersInterference": 0,
+              "sacBunts": 0,
+              "sacFlies": 0,
+              "passedBall": 0,
+              "popOuts": 0,
+              "lineOuts": 3
+            }
+          }
+        }
+      },
+      "batters": [
+        699302
+      ],
+      "pitchers": [
+        674265
+      ]
+    },
+    "home": {
+      "team": {
+        "id": 559,
+        "name": "Rocket City Trash Pandas",
+        "sport": {
+          "id": 12,
+          "link": "/api/v1/sports/12",
+          "name": "Double-A"
+        }
+      },
+      "players": {
+        "ID702574": {
+          "person": {
+            "id": 702574,
+            "fullName": "David Mershon",
+            "link": "/api/v1/people/702574",
+            "boxscoreName": "Mershon",
+            "nameSlug": "david-mershon-702574"
+          },
+          "position": {
+            "code": "4",
+            "name": "Second Base",
+            "type": "Infielder",
+            "abbreviation": "2B"
+          },
+          "battingOrder": "100",
+          "stats": {
+            "batting": {
+              "summary": "0-4 | K",
+              "gamesPlayed": 1,
+              "flyOuts": 1,
+              "groundOuts": 2,
+              "airOuts": 1,
+              "runs": 0,
+              "doubles": 0,
+              "triples": 0,
+              "homeRuns": 0,
+              "strikeOuts": 1,
+              "baseOnBalls": 0,
+              "intentionalWalks": 0,
+              "hits": 0,
+              "hitByPitch": 0,
+              "atBats": 4,
+              "caughtStealing": 0,
+              "stolenBases": 0,
+              "stolenBasePercentage": ".---",
+              "groundIntoDoublePlay": 0,
+              "groundIntoTriplePlay": 0,
+              "plateAppearances": 4,
+              "totalBases": 0,
+              "rbi": 0,
+              "leftOnBase": 3,
+              "sacBunts": 0,
+              "sacFlies": 0,
+              "catchersInterference": 0,
+              "pickoffs": 0,
+              "atBatsPerHomeRun": "-.--",
+              "popOuts": 0,
+              "lineOuts": 0
+            },
+            "pitching": {}
+          }
+        },
+        "ID691951": {
+          "person": {
+            "id": 691951,
+            "fullName": "Sam Aldegheri",
+            "link": "/api/v1/people/691951",
+            "boxscoreName": "Aldegheri",
+            "nameSlug": "sam-aldegheri-691951"
+          },
+          "position": {
+            "code": "1",
+            "name": "Pitcher",
+            "type": "Pitcher",
+            "abbreviation": "P"
+          },
+          "battingOrder": null,
+          "stats": {
+            "batting": {},
+            "pitching": {
+              "note": "(L, 2-5)",
+              "summary": "5.0 IP, 6 ER, 5 K, 2 BB",
+              "gamesPlayed": 1,
+              "gamesStarted": 1,
+              "flyOuts": 4,
+              "groundOuts": 5,
+              "airOuts": 5,
+              "runs": 6,
+              "doubles": 1,
+              "triples": 1,
+              "homeRuns": 3,
+              "strikeOuts": 5,
+              "baseOnBalls": 2,
+              "intentionalWalks": 0,
+              "hits": 7,
+              "hitByPitch": 0,
+              "atBats": 22,
+              "caughtStealing": 0,
+              "stolenBases": 0,
+              "stolenBasePercentage": ".---",
+              "numberOfPitches": 79,
+              "inningsPitched": "5.0",
+              "wins": 0,
+              "losses": 1,
+              "saves": 0,
+              "saveOpportunities": 0,
+              "holds": 0,
+              "blownSaves": 0,
+              "earnedRuns": 6,
+              "battersFaced": 24,
+              "outs": 15,
+              "gamesPitched": 1,
+              "completeGames": 0,
+              "shutouts": 0,
+              "pitchesThrown": 79,
+              "balls": 25,
+              "strikes": 54,
+              "strikePercentage": ".680",
+              "hitBatsmen": 0,
+              "balks": 0,
+              "wildPitches": 0,
+              "pickoffs": 0,
+              "rbi": 6,
+              "gamesFinished": 0,
+              "runsScoredPer9": "10.80",
+              "homeRunsPer9": "5.40",
+              "inheritedRunners": 0,
+              "inheritedRunnersScored": 0,
+              "catchersInterference": 0,
+              "sacBunts": 0,
+              "sacFlies": 0,
+              "passedBall": 0,
+              "popOuts": 0,
+              "lineOuts": 1
+            }
+          }
+        }
+      },
+      "batters": [
+        702574
+      ],
+      "pitchers": [
+        691951
+      ]
+    }
+  }
+}

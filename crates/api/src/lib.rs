@@ -16,13 +16,18 @@ use axum::extract::{Path, Query, State};
 use axum::routing::get;
 use axum::{Json, Router};
 use diamond_stats_core::{
-    ATTRIBUTION_NOTE, BattingStint, GameLogEntry, LeaderStat, Level, MLBAM_TERMS_URL,
-    PitchingStint, StatGroup, Team,
+    ATTRIBUTION_NOTE, BattingStint, BoxBattingLine, BoxPitchingLine, GameLogEntry, LeaderStat,
+    Level, MLBAM_TERMS_URL, Pitch, PitchTracking, PitchingStint, PlateAppearance, ScheduledGame,
+    StatGroup, Team, parse_iso_date, pitch_tracking_note,
 };
 use diamond_stats_ingest::{
-    ClientConfig, HttpStatsClient, IngestError, StatsApi, materialize_game_log,
+    ClientConfig, HttpStatsClient, IngestError, StatsApi, materialize_boxscore,
+    materialize_game_header, materialize_game_log, materialize_plays, materialize_schedule,
 };
-use diamond_stats_query::{GameLogLoad, LeaderRequest, LeaderRow, QueryError, StatsStore};
+use diamond_stats_query::{
+    GameLogLoad, LeaderRequest, LeaderRow, MatchupRequest, QueryError, ScheduleLoad, SeasonFilter,
+    StatsStore,
+};
 use error::ApiError;
 use serde::{Deserialize, Serialize};
 use tokio::net::TcpListener;
@@ -237,6 +242,180 @@ pub struct SeasonLevelParams {
     pub level: String,
 }
 
+/// Optional filters for `GET /v1/players/{id}/seasons`.
+///
+/// Leaving `level` unset returns every ingested level. That is the cross-level
+/// view of a season when `season` is set, and the career view when both are unset.
+#[derive(Debug, Deserialize, IntoParams)]
+pub struct PlayerSeasonParams {
+    /// Season year. Omit for every ingested season.
+    pub season: Option<u16>,
+    /// Level slug. Omit for every ingested level.
+    pub level: Option<String>,
+}
+
+/// Query string for a schedule date.
+#[derive(Debug, Deserialize, IntoParams)]
+pub struct GamesParams {
+    /// Season year.
+    pub season: u16,
+    /// Level slug (`mlb`, `aaa`, `aa`, `high_a`, `single_a`, `rookie`).
+    pub level: String,
+    /// Schedule date, `YYYY-MM-DD`.
+    pub date: String,
+}
+
+/// `GET /v1/games`.
+#[derive(Debug, Serialize, ToSchema)]
+pub struct GamesResponse {
+    /// Season.
+    pub season: u16,
+    /// Level.
+    pub level: Level,
+    /// Schedule date that was requested.
+    pub date: String,
+    /// Games returned for that date, including postponements.
+    pub games: Vec<ScheduledGame>,
+    /// Provenance.
+    pub attribution: Attribution,
+}
+
+/// `GET /v1/games/{game_pk}`.
+#[derive(Debug, Serialize, ToSchema)]
+pub struct GameResponse {
+    /// Schedule row.
+    pub game: ScheduledGame,
+    /// False when the game is not an official final, so no box score was stored.
+    pub boxscore_loaded: bool,
+    /// Postponement or reschedule note, when there is one.
+    pub note: Option<String>,
+    /// Batting lines. Empty until the box score is loaded.
+    pub batting: Vec<BoxBattingLine>,
+    /// Pitching lines.
+    pub pitching: Vec<BoxPitchingLine>,
+    /// Provenance.
+    pub attribution: Attribution,
+}
+
+/// One pitch in a play-by-play response.
+#[derive(Debug, Serialize, ToSchema)]
+pub struct PitchJson {
+    /// Pitch number in the plate appearance, starting at 1.
+    pub pitch_number: u32,
+    /// Umpire call code.
+    pub call_code: Option<String>,
+    /// Umpire call description.
+    pub call_description: Option<String>,
+    /// Pitch-type code, when the feed sent one.
+    pub pitch_type_code: Option<String>,
+    /// Pitch-type name, when the feed sent one.
+    pub pitch_type: Option<String>,
+    /// Release speed in mph, when the feed sent one.
+    pub start_speed: Option<f64>,
+    /// The call was a ball.
+    pub is_ball: bool,
+    /// The call was a strike.
+    pub is_strike: bool,
+    /// The ball was put in play.
+    pub is_in_play: bool,
+}
+
+/// One plate appearance, with the pitches the feed included.
+#[derive(Debug, Serialize, ToSchema)]
+pub struct PlateAppearanceJson {
+    /// Zero-based index.
+    pub at_bat_index: u32,
+    /// Inning.
+    pub inning: u32,
+    /// `top` or `bottom`.
+    pub half_inning: String,
+    /// Batter id.
+    pub batter_id: u32,
+    /// Batter name.
+    pub batter_name: String,
+    /// Pitcher id.
+    pub pitcher_id: u32,
+    /// Pitcher name.
+    pub pitcher_name: String,
+    /// Batter hand.
+    pub bat_side: Option<String>,
+    /// Pitcher hand.
+    pub pitch_hand: Option<String>,
+    /// Result label.
+    pub event: Option<String>,
+    /// Result code.
+    pub event_type: Option<String>,
+    /// Prose description.
+    pub description: Option<String>,
+    /// RBI.
+    pub rbi: u32,
+    /// Whether the play scored a run.
+    pub is_scoring_play: bool,
+    /// Away score after the play.
+    pub away_score: u32,
+    /// Home score after the play.
+    pub home_score: u32,
+    /// Pitches. Empty when the feed had no pitch events for this plate appearance.
+    pub pitches: Vec<PitchJson>,
+}
+
+/// `GET /v1/games/{game_pk}/plays`.
+#[derive(Debug, Serialize, ToSchema)]
+pub struct PlaysResponse {
+    /// `gamePk`.
+    pub game_pk: u64,
+    /// Season.
+    pub season: u16,
+    /// Level.
+    pub level: Level,
+    /// Schedule date.
+    pub schedule_date: String,
+    /// Official date. May differ when the game was rescheduled.
+    pub official_date: String,
+    /// Plate appearances.
+    pub plate_appearances: Vec<PlateAppearanceJson>,
+    /// Counts of what the feed actually contained.
+    pub pitch_tracking: PitchTracking,
+    /// A sentence describing the pitch-tracking gap, if any.
+    pub pitch_tracking_note: String,
+    /// Provenance.
+    pub attribution: Attribution,
+}
+
+/// Query string for a batter-vs-pitcher list.
+#[derive(Debug, Deserialize, IntoParams)]
+pub struct MatchupParams {
+    /// Season year.
+    pub season: u16,
+    /// Level slug.
+    pub level: String,
+    /// Batter id. At least one of `batter_id` or `pitcher_id` is required.
+    pub batter_id: Option<u32>,
+    /// Pitcher id.
+    pub pitcher_id: Option<u32>,
+    /// 1..=200. Defaults to 50.
+    pub limit: Option<u32>,
+}
+
+/// `GET /v1/matchups`.
+#[derive(Debug, Serialize, ToSchema)]
+pub struct MatchupResponse {
+    /// Season.
+    pub season: u16,
+    /// Level.
+    pub level: Level,
+    /// Batter filter, when set.
+    pub batter_id: Option<u32>,
+    /// Pitcher filter, when set.
+    pub pitcher_id: Option<u32>,
+    /// Stored plate appearances. This does not download games that are not on disk.
+    pub plate_appearances: Vec<PlateAppearance>,
+    /// Scope of the list.
+    pub note: &'static str,
+    /// Provenance.
+    pub attribution: Attribution,
+}
+
 /// Build the router, including Swagger UI.
 pub fn router<T: StatsApi>(state: AppState<T>) -> Router {
     Router::new()
@@ -247,6 +426,10 @@ pub fn router<T: StatsApi>(state: AppState<T>) -> Router {
         .route("/v1/players/{player_id}/seasons", get(player_seasons))
         .route("/v1/players/{player_id}/gamelog", get(player_gamelog))
         .route("/v1/leaders", get(leaders))
+        .route("/v1/games", get(games_on_date))
+        .route("/v1/games/{game_pk}", get(game_detail))
+        .route("/v1/games/{game_pk}/plays", get(game_plays))
+        .route("/v1/matchups", get(matchups))
         .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
         .layer(TraceLayer::new_for_http())
         .with_state(state)
@@ -374,9 +557,12 @@ async fn roster<T: StatsApi>(
     get,
     path = "/v1/players/{player_id}/seasons",
     tag = "players",
-    params(("player_id" = u32, Path, description = "MLB person id")),
+    params(
+        ("player_id" = u32, Path, description = "MLB person id"),
+        PlayerSeasonParams
+    ),
     responses(
-        (status = 200, description = "Stints across ingested levels", body = PlayerSeasonsResponse),
+        (status = 200, description = "Stints across ingested levels. level is optional; omit it for every level in the season.", body = PlayerSeasonsResponse),
         (status = 404, description = "Player has no ingested stints", body = ErrorBody),
         (status = 503, description = "Nothing has been ingested", body = ErrorBody)
     )
@@ -384,10 +570,20 @@ async fn roster<T: StatsApi>(
 async fn player_seasons<T: StatsApi>(
     State(state): State<AppState<T>>,
     Path(player_id): Path<String>,
+    query: Result<Query<PlayerSeasonParams>, axum::extract::rejection::QueryRejection>,
 ) -> Result<Json<PlayerSeasonsResponse>, ApiError> {
     let player_id = parse_u32(&player_id, "player id")?;
+    let Query(query) = query.map_err(|err| ApiError::bad_request(err.to_string()))?;
+    let level = match query.level.as_deref() {
+        Some(raw) => Some(parse_level(raw)?),
+        None => None,
+    };
+    let filter = SeasonFilter {
+        season: query.season,
+        level,
+    };
     let store = StatsStore::new(state.data_dir.clone());
-    let seasons = blocking(move || store.player_seasons(player_id)).await?;
+    let seasons = blocking(move || store.player_seasons_filtered(player_id, filter)).await?;
     if seasons.is_empty() {
         return Err(ApiError::not_found(format!(
             "no ingested stints for player {player_id}"
@@ -513,6 +709,302 @@ async fn leaders<T: StatsApi>(
     }))
 }
 
+#[utoipa::path(
+    get,
+    path = "/v1/games",
+    tag = "games",
+    params(GamesParams),
+    responses(
+        (status = 200, description = "Games on a schedule date", body = GamesResponse),
+        (status = 400, description = "Bad date or level", body = ErrorBody),
+        (status = 502, description = "Stats API request failed", body = ErrorBody)
+    )
+)]
+async fn games_on_date<T: StatsApi>(
+    State(state): State<AppState<T>>,
+    query: Result<Query<GamesParams>, axum::extract::rejection::QueryRejection>,
+) -> Result<Json<GamesResponse>, ApiError> {
+    let Query(query) = query.map_err(|err| ApiError::bad_request(err.to_string()))?;
+    let level = parse_level(&query.level)?;
+    let date = parse_iso_date(&query.date).map_err(|err| ApiError::bad_request(err.to_string()))?;
+    let games = load_schedule(&state, query.season, level, &date).await?;
+    Ok(Json(GamesResponse {
+        season: query.season,
+        level,
+        date,
+        games,
+        attribution: attribution(),
+    }))
+}
+
+#[utoipa::path(
+    get,
+    path = "/v1/games/{game_pk}",
+    tag = "games",
+    params(("game_pk" = u64, Path, description = "Stats API gamePk")),
+    responses(
+        (status = 200, description = "Game and, when final, its box score", body = GameResponse),
+        (status = 404, description = "Unknown gamePk", body = ErrorBody),
+        (status = 502, description = "Stats API request failed", body = ErrorBody)
+    )
+)]
+async fn game_detail<T: StatsApi>(
+    State(state): State<AppState<T>>,
+    Path(game_pk): Path<String>,
+) -> Result<Json<GameResponse>, ApiError> {
+    let game_pk = parse_u64(&game_pk, "game pk")?;
+    let game = load_game(&state, game_pk).await?;
+    let (batting, pitching, loaded) = if game.boxscore_ready() {
+        let lines = load_box(&state, &game).await?;
+        (lines.batting, lines.pitching, true)
+    } else {
+        (Vec::new(), Vec::new(), false)
+    };
+    Ok(Json(GameResponse {
+        note: game_note(&game, loaded),
+        game,
+        boxscore_loaded: loaded,
+        batting,
+        pitching,
+        attribution: attribution(),
+    }))
+}
+
+#[utoipa::path(
+    get,
+    path = "/v1/games/{game_pk}/plays",
+    tag = "games",
+    params(("game_pk" = u64, Path, description = "Stats API gamePk")),
+    responses(
+        (status = 200, description = "Plate appearances and pitches for one game", body = PlaysResponse),
+        (status = 400, description = "Game is not final", body = ErrorBody),
+        (status = 404, description = "Unknown gamePk", body = ErrorBody),
+        (status = 502, description = "Stats API request failed", body = ErrorBody)
+    )
+)]
+async fn game_plays<T: StatsApi>(
+    State(state): State<AppState<T>>,
+    Path(game_pk): Path<String>,
+) -> Result<Json<PlaysResponse>, ApiError> {
+    let game_pk = parse_u64(&game_pk, "game pk")?;
+    let game = load_game(&state, game_pk).await?;
+    if !game.boxscore_ready() {
+        return Err(ApiError::bad_request(format!(
+            "game {} is {}; play-by-play is stored for final games",
+            game.game_pk, game.detailed_state
+        )));
+    }
+    let feed = load_plays(&state, &game).await?;
+    let tracking = PitchTracking::from_rows(&feed.plate_appearances, &feed.pitches);
+    let plate_appearances = nest_plays(&feed.plate_appearances, &feed.pitches);
+    Ok(Json(PlaysResponse {
+        game_pk: game.game_pk,
+        season: game.season,
+        level: game.level,
+        schedule_date: game.schedule_date,
+        official_date: game.official_date,
+        plate_appearances,
+        pitch_tracking_note: pitch_tracking_note(&tracking).to_string(),
+        pitch_tracking: tracking,
+        attribution: attribution(),
+    }))
+}
+
+#[utoipa::path(
+    get,
+    path = "/v1/matchups",
+    tag = "games",
+    params(MatchupParams),
+    responses(
+        (status = 200, description = "Stored plate appearances for a batter, a pitcher, or both", body = MatchupResponse),
+        (status = 400, description = "Missing batter and pitcher, or a bad limit", body = ErrorBody),
+        (status = 503, description = "No play-by-play has been ingested", body = ErrorBody)
+    )
+)]
+async fn matchups<T: StatsApi>(
+    State(state): State<AppState<T>>,
+    query: Result<Query<MatchupParams>, axum::extract::rejection::QueryRejection>,
+) -> Result<Json<MatchupResponse>, ApiError> {
+    let Query(query) = query.map_err(|err| ApiError::bad_request(err.to_string()))?;
+    if query.batter_id.is_none() && query.pitcher_id.is_none() {
+        return Err(ApiError::bad_request(
+            "matchup requires batter_id or pitcher_id",
+        ));
+    }
+    let level = parse_level(&query.level)?;
+    let limit = query.limit.unwrap_or(50);
+    if !(1..=200).contains(&limit) {
+        return Err(ApiError::bad_request("limit must be between 1 and 200"));
+    }
+    let request = MatchupRequest {
+        season: query.season,
+        level,
+        batter_id: query.batter_id,
+        pitcher_id: query.pitcher_id,
+        limit,
+    };
+    let store = StatsStore::new(state.data_dir.clone());
+    let plate_appearances = blocking(move || store.matchups(request)).await?;
+    Ok(Json(MatchupResponse {
+        season: query.season,
+        level,
+        batter_id: query.batter_id,
+        pitcher_id: query.pitcher_id,
+        plate_appearances,
+        note: "Only games whose play-by-play has been ingested are included.",
+        attribution: attribution(),
+    }))
+}
+
+fn game_note(game: &ScheduledGame, box_loaded: bool) -> Option<String> {
+    let mut parts = Vec::new();
+    if game.schedule_date != game.official_date {
+        parts.push(format!(
+            "Listed on the {} schedule; officialDate is {} ({}).",
+            game.schedule_date, game.official_date, game.detailed_state
+        ));
+    }
+    if !box_loaded {
+        parts.push(format!(
+            "Box score and play-by-play are stored only for final games (status: {}).",
+            game.detailed_state
+        ));
+    }
+    if parts.is_empty() {
+        None
+    } else {
+        Some(parts.join(" "))
+    }
+}
+
+fn nest_plays(plays: &[PlateAppearance], pitches: &[Pitch]) -> Vec<PlateAppearanceJson> {
+    plays
+        .iter()
+        .map(|play| PlateAppearanceJson {
+            at_bat_index: play.at_bat_index,
+            inning: play.inning,
+            half_inning: play.half_inning.clone(),
+            batter_id: play.batter_id,
+            batter_name: play.batter_name.clone(),
+            pitcher_id: play.pitcher_id,
+            pitcher_name: play.pitcher_name.clone(),
+            bat_side: play.bat_side.clone(),
+            pitch_hand: play.pitch_hand.clone(),
+            event: play.event.clone(),
+            event_type: play.event_type.clone(),
+            description: play.description.clone(),
+            rbi: play.rbi,
+            is_scoring_play: play.is_scoring_play,
+            away_score: play.away_score,
+            home_score: play.home_score,
+            pitches: pitches
+                .iter()
+                .filter(|pitch| {
+                    pitch.at_bat_index == play.at_bat_index && pitch.game_pk == play.game_pk
+                })
+                .map(|pitch| PitchJson {
+                    pitch_number: pitch.pitch_number,
+                    call_code: pitch.call_code.clone(),
+                    call_description: pitch.call_description.clone(),
+                    pitch_type_code: pitch.pitch_type_code.clone(),
+                    pitch_type: pitch.pitch_type.clone(),
+                    start_speed: pitch.start_speed,
+                    is_ball: pitch.is_ball,
+                    is_strike: pitch.is_strike,
+                    is_in_play: pitch.is_in_play,
+                })
+                .collect(),
+        })
+        .collect()
+}
+
+async fn load_schedule<T: StatsApi>(
+    state: &AppState<T>,
+    season: u16,
+    level: Level,
+    date: &str,
+) -> Result<Vec<ScheduledGame>, ApiError> {
+    let store = StatsStore::new(state.data_dir.clone());
+    let date_owned = date.to_string();
+    if let ScheduleLoad::Games(games) =
+        blocking(move || store.schedule(season, level, &date_owned)).await?
+    {
+        return Ok(games);
+    }
+    let _guard = state.materialize.lock().await;
+    let store = StatsStore::new(state.data_dir.clone());
+    let date_owned = date.to_string();
+    if let ScheduleLoad::Games(games) =
+        blocking(move || store.schedule(season, level, &date_owned)).await?
+    {
+        return Ok(games);
+    }
+    let games = materialize_schedule(&state.api, &state.data_dir, season, level, date).await?;
+    Ok(games)
+}
+
+async fn load_game<T: StatsApi>(
+    state: &AppState<T>,
+    game_pk: u64,
+) -> Result<ScheduledGame, ApiError> {
+    let store = StatsStore::new(state.data_dir.clone());
+    if let Some(game) = blocking(move || store.game_by_pk(game_pk)).await? {
+        return Ok(game);
+    }
+    let _guard = state.materialize.lock().await;
+    let store = StatsStore::new(state.data_dir.clone());
+    if let Some(game) = blocking(move || store.game_by_pk(game_pk)).await? {
+        return Ok(game);
+    }
+    Ok(materialize_game_header(&state.api, &state.data_dir, game_pk).await?)
+}
+
+async fn load_box<T: StatsApi>(
+    state: &AppState<T>,
+    game: &ScheduledGame,
+) -> Result<diamond_stats_query::BoxScore, ApiError> {
+    let stored = game.clone();
+    let store = StatsStore::new(state.data_dir.clone());
+    if let Some(lines) = blocking(move || store.boxscore(&stored)).await? {
+        return Ok(lines);
+    }
+    let _guard = state.materialize.lock().await;
+    let stored = game.clone();
+    let store = StatsStore::new(state.data_dir.clone());
+    if let Some(lines) = blocking(move || store.boxscore(&stored)).await? {
+        return Ok(lines);
+    }
+    materialize_boxscore(&state.api, &state.data_dir, game).await?;
+    let stored = game.clone();
+    let store = StatsStore::new(state.data_dir.clone());
+    blocking(move || store.boxscore(&stored))
+        .await?
+        .ok_or_else(|| ApiError::internal("box score file was not written"))
+}
+
+async fn load_plays<T: StatsApi>(
+    state: &AppState<T>,
+    game: &ScheduledGame,
+) -> Result<diamond_stats_query::PlayFeed, ApiError> {
+    let stored = game.clone();
+    let store = StatsStore::new(state.data_dir.clone());
+    if let Some(feed) = blocking(move || store.plays(&stored)).await? {
+        return Ok(feed);
+    }
+    let _guard = state.materialize.lock().await;
+    let stored = game.clone();
+    let store = StatsStore::new(state.data_dir.clone());
+    if let Some(feed) = blocking(move || store.plays(&stored)).await? {
+        return Ok(feed);
+    }
+    materialize_plays(&state.api, &state.data_dir, game).await?;
+    let stored = game.clone();
+    let store = StatsStore::new(state.data_dir.clone());
+    blocking(move || store.plays(&stored))
+        .await?
+        .ok_or_else(|| ApiError::internal("play-by-play file was not written"))
+}
+
 fn thresholds(
     stat: LeaderStat,
     min_pa: Option<u32>,
@@ -596,6 +1088,11 @@ fn parse_u32(raw: &str, what: &str) -> Result<u32, ApiError> {
         .map_err(|_| ApiError::bad_request(format!("{what} must be an integer")))
 }
 
+fn parse_u64(raw: &str, what: &str) -> Result<u64, ApiError> {
+    raw.parse::<u64>()
+        .map_err(|_| ApiError::bad_request(format!("{what} must be an integer")))
+}
+
 #[derive(OpenApi)]
 #[openapi(
     info(
@@ -603,7 +1100,19 @@ fn parse_u32(raw: &str, what: &str) -> Result<u32, ApiError> {
         version = "0.1.0",
         description = "Individual, non-commercial queries over MLB and Minor League statistics cached from the MLB Stats API. Not a bulk download service. Data is copyright MLB Advanced Media, L.P."
     ),
-    paths(health, levels, list_teams, roster, player_seasons, player_gamelog, leaders),
+    paths(
+        health,
+        levels,
+        list_teams,
+        roster,
+        player_seasons,
+        player_gamelog,
+        leaders,
+        games_on_date,
+        game_detail,
+        game_plays,
+        matchups
+    ),
     components(schemas(
         HealthResponse,
         LevelsResponse,
@@ -614,6 +1123,12 @@ fn parse_u32(raw: &str, what: &str) -> Result<u32, ApiError> {
         GameLogResponse,
         LeadersResponse,
         LeaderJson,
+        GamesResponse,
+        GameResponse,
+        PlaysResponse,
+        PlateAppearanceJson,
+        PitchJson,
+        MatchupResponse,
         ErrorBody,
         ErrorDetail,
         Attribution,
@@ -622,13 +1137,19 @@ fn parse_u32(raw: &str, what: &str) -> Result<u32, ApiError> {
         GameLogEntry,
         Team,
         Level,
-        StatGroup
+        StatGroup,
+        ScheduledGame,
+        BoxBattingLine,
+        BoxPitchingLine,
+        PlateAppearance,
+        PitchTracking
     )),
     tags(
         (name = "meta", description = "Service and level catalog"),
         (name = "teams", description = "Clubs and single-team stints"),
         (name = "players", description = "A player's stints and game log"),
-        (name = "leaders", description = "Small leaderboards")
+        (name = "leaders", description = "Small leaderboards"),
+        (name = "games", description = "Schedules, box scores, and play-by-play")
     )
 )]
 struct ApiDoc;

@@ -14,7 +14,7 @@ Do not add a scraper for FanGraphs or Baseball-Reference.
 cargo fmt --all -- --check
 cargo clippy --workspace --all-targets -- -D warnings
 cargo test --workspace
-cargo deny check
+cargo deny --workspace check
 ```
 
 `cargo test` does not use the network. The DuckDB client downloads a prebuilt shared library at build time; `cargo test` and `cargo run` put that library on the loader path.

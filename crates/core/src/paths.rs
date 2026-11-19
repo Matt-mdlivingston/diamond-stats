@@ -47,6 +47,42 @@ pub fn partition_file(data_dir: &Path, dataset: &str, season: u16, level: Level)
     partition_dir(data_dir, dataset, season, level).join("part-0.parquet")
 }
 
+/// Schedule file for one requested date: `{dataset}/season={year}/level={slug}/date={day}.parquet`.
+///
+/// The date has already been checked by [`crate::parse_iso_date`]. A postponed
+/// game whose `officialDate` moved still lives in the file for the date that
+/// was requested.
+pub fn schedule_file(data_dir: &Path, season: u16, level: Level, date: &str) -> PathBuf {
+    partition_dir(data_dir, "schedule", season, level).join(format!("date={date}.parquet"))
+}
+
+/// One game discovered by `gamePk` when the day's schedule file is not the source.
+pub fn game_header_file(data_dir: &Path, season: u16, level: Level, game_pk: u64) -> PathBuf {
+    partition_dir(data_dir, "game_header", season, level).join(format!("game={game_pk}.parquet"))
+}
+
+/// Batting lines for one game.
+pub fn box_batting_file(data_dir: &Path, season: u16, level: Level, game_pk: u64) -> PathBuf {
+    partition_dir(data_dir, "boxscore_batting", season, level)
+        .join(format!("game={game_pk}.parquet"))
+}
+
+/// Pitching lines for one game.
+pub fn box_pitching_file(data_dir: &Path, season: u16, level: Level, game_pk: u64) -> PathBuf {
+    partition_dir(data_dir, "boxscore_pitching", season, level)
+        .join(format!("game={game_pk}.parquet"))
+}
+
+/// Plate appearances for one game.
+pub fn plays_file(data_dir: &Path, season: u16, level: Level, game_pk: u64) -> PathBuf {
+    partition_dir(data_dir, "plays", season, level).join(format!("game={game_pk}.parquet"))
+}
+
+/// Pitches for one game. An empty file means the feed had no pitch events.
+pub fn pitches_file(data_dir: &Path, season: u16, level: Level, game_pk: u64) -> PathBuf {
+    partition_dir(data_dir, "pitches", season, level).join(format!("game={game_pk}.parquet"))
+}
+
 /// One player's lazily materialized game log.
 pub fn gamelog_file(
     data_dir: &Path,
@@ -97,6 +133,14 @@ mod tests {
             PathBuf::from(
                 "/data/parquet/gamelog_pitching/season=2025/level=aaa/player=694973.parquet"
             )
+        );
+        assert_eq!(
+            schedule_file(root, 2025, Level::Aa, "2025-06-21"),
+            PathBuf::from("/data/parquet/schedule/season=2025/level=aa/date=2025-06-21.parquet")
+        );
+        assert_eq!(
+            plays_file(root, 2025, Level::Rookie, 807_418),
+            PathBuf::from("/data/parquet/plays/season=2025/level=rookie/game=807418.parquet")
         );
     }
 
