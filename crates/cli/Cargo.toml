@@ -1,0 +1,22 @@
+[package]
+name = "diamond-stats-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+rust-version.workspace = true
+description = "Ingest and serve commands for diamond-stats"
+
+[[bin]]
+name = "diamond-stats"
+path = "src/main.rs"
+
+[dependencies]
+diamond-stats-api = { workspace = true }
+diamond-stats-core = { workspace = true }
+diamond-stats-ingest = { workspace = true }
+clap = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }

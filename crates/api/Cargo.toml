@@ -1,0 +1,32 @@
+[package]
+name = "diamond-stats-api"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+rust-version.workspace = true
+description = "Axum HTTP API for diamond-stats"
+
+[dependencies]
+diamond-stats-core = { workspace = true }
+diamond-stats-ingest = { workspace = true }
+diamond-stats-query = { workspace = true }
+axum = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+tower-http = { workspace = true }
+tracing = { workspace = true }
+utoipa = { workspace = true }
+utoipa-swagger-ui = { workspace = true }
+
+[dev-dependencies]
+diamond-stats-ingest = { workspace = true }
+http = { workspace = true }
+http-body-util = { workspace = true }
+serde_json = { workspace = true }
+tempfile = { workspace = true }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+tower = { workspace = true }
