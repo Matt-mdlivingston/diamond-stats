@@ -1,0 +1,83 @@
+{
+  "copyright": "Copyright 2026 MLB Advanced Media, L.P.  Use of any content on this page acknowledges agreement to the terms posted here http://gdx.mlb.com/components/copyright.txt",
+  "teams": [
+    {
+      "allStarStatus": "N",
+      "id": 529,
+      "name": "Tacoma Rainiers",
+      "link": "/api/v1/teams/529",
+      "season": 2025,
+      "venue": {
+        "id": 2745,
+        "name": "Cheney Stadium",
+        "link": "/api/v1/venues/2745"
+      },
+      "teamCode": "tac",
+      "fileCode": "t529",
+      "abbreviation": "TAC",
+      "teamName": "Rainiers",
+      "locationName": "Tacoma",
+      "firstYearOfPlay": "1960",
+      "league": {
+        "id": 112,
+        "name": "Pacific Coast League",
+        "link": "/api/v1/league/112"
+      },
+      "division": {
+        "id": 231,
+        "name": "Pacific Coast League West",
+        "link": "/api/v1/divisions/231"
+      },
+      "sport": {
+        "id": 11,
+        "link": "/api/v1/sports/11",
+        "name": "Triple-A"
+      },
+      "shortName": "Tacoma",
+      "parentOrgName": "Seattle Mariners",
+      "parentOrgId": 136,
+      "franchiseName": "Tacoma",
+      "clubName": "Rainiers",
+      "active": true
+    },
+    {
+      "allStarStatus": "N",
+      "id": 533,
+      "name": "Worcester Red Sox",
+      "link": "/api/v1/teams/533",
+      "season": 2025,
+      "venue": {
+        "id": 5410,
+        "name": "Polar Park",
+        "link": "/api/v1/venues/5410"
+      },
+      "teamCode": "wor",
+      "fileCode": "t533",
+      "abbreviation": "WOR",
+      "teamName": "Red Sox",
+      "locationName": "Worcester",
+      "firstYearOfPlay": "1970",
+      "league": {
+        "id": 117,
+        "name": "International League",
+        "link": "/api/v1/league/117"
+      },
+      "division": {
+        "id": 219,
+        "name": "International League East",
+        "link": "/api/v1/divisions/219"
+      },
+      "sport": {
+        "id": 11,
+        "link": "/api/v1/sports/11",
+        "name": "Triple-A"
+      },
+      "shortName": "Worcester",
+      "parentOrgName": "Boston Red Sox",
+      "parentOrgId": 111,
+      "franchiseName": "Worcester",
+      "clubName": "Red Sox",
+      "active": true
+    }
+  ]
+}
