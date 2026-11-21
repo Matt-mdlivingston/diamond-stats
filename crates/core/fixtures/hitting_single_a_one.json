@@ -1,0 +1,90 @@
+{
+  "copyright": "Copyright 2026 MLB Advanced Media, L.P.  Use of any content on this page acknowledges agreement to the terms posted here http://gdx.mlb.com/components/copyright.txt",
+  "stats": [
+    {
+      "type": {
+        "displayName": "season"
+      },
+      "group": {
+        "displayName": "hitting"
+      },
+      "totalSplits": 922,
+      "exemptions": [],
+      "splits": [
+        {
+          "season": "2025",
+          "stat": {
+            "age": 22,
+            "gamesPlayed": 3,
+            "groundOuts": 1,
+            "airOuts": 0,
+            "runs": 3,
+            "doubles": 1,
+            "triples": 0,
+            "homeRuns": 1,
+            "strikeOuts": 2,
+            "baseOnBalls": 1,
+            "intentionalWalks": 0,
+            "hits": 7,
+            "hitByPitch": 0,
+            "avg": ".700",
+            "atBats": 10,
+            "obp": ".727",
+            "slg": "1.100",
+            "ops": "1.827",
+            "caughtStealing": 1,
+            "stolenBases": 0,
+            "stolenBasePercentage": ".000",
+            "caughtStealingPercentage": "1.000",
+            "groundIntoDoublePlay": 0,
+            "numberOfPitches": 42,
+            "plateAppearances": 11,
+            "totalBases": 11,
+            "rbi": 5,
+            "leftOnBase": 1,
+            "sacBunts": 0,
+            "sacFlies": 0,
+            "babip": ".857",
+            "groundOutsToAirouts": "1.00",
+            "catchersInterference": 0,
+            "atBatsPerHomeRun": "10.00"
+          },
+          "team": {
+            "id": 526,
+            "name": "Rancho Cucamonga Quakes",
+            "link": "/api/v1/teams/526"
+          },
+          "player": {
+            "id": 691559,
+            "fullName": "Jose D. Hernandez",
+            "link": "/api/v1/people/691559",
+            "firstName": "Jose D.",
+            "lastName": "Hernandez",
+            "nameSlug": "jose-d-hernandez-691559"
+          },
+          "league": {
+            "id": 110,
+            "name": "CAL",
+            "link": "/api/v1/league/110"
+          },
+          "sport": {
+            "id": 14,
+            "link": "/api/v1/sports/14",
+            "abbreviation": "A"
+          },
+          "numTeams": 1,
+          "rank": 1,
+          "position": {
+            "code": "7",
+            "name": "Outfielder",
+            "type": "Outfielder",
+            "abbreviation": "LF"
+          }
+        }
+      ],
+      "splitsTiedWithOffset": [],
+      "splitsTiedWithLimit": [],
+      "playerPool": "ALL"
+    }
+  ]
+}

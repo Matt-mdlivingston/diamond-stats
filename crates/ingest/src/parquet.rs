@@ -351,27 +351,31 @@ fn gamelog_common_fields() -> Vec<Field> {
     ]
 }
 
-fn int(name: &str) -> Field {
+pub(crate) fn int(name: &str) -> Field {
     Field::new(name, DataType::Int32, false)
 }
 
-fn int_null(name: &str) -> Field {
+pub(crate) fn int_null(name: &str) -> Field {
     Field::new(name, DataType::Int32, true)
 }
 
-fn utf(name: &str) -> Field {
+pub(crate) fn utf(name: &str) -> Field {
     Field::new(name, DataType::Utf8, false)
 }
 
-fn utf_null(name: &str) -> Field {
+pub(crate) fn utf_null(name: &str) -> Field {
     Field::new(name, DataType::Utf8, true)
 }
 
-fn float_null(name: &str) -> Field {
+pub(crate) fn float_null(name: &str) -> Field {
     Field::new(name, DataType::Float64, true)
 }
 
-fn write_batch(path: &Path, schema: Arc<Schema>, batch: RecordBatch) -> Result<(), IngestError> {
+pub(crate) fn write_batch(
+    path: &Path,
+    schema: Arc<Schema>,
+    batch: RecordBatch,
+) -> Result<(), IngestError> {
     if let Some(parent) = path.parent() {
         fs::create_dir_all(parent)?;
     }
@@ -389,17 +393,17 @@ fn write_batch(path: &Path, schema: Arc<Schema>, batch: RecordBatch) -> Result<(
     Ok(())
 }
 
-fn map<T, U>(rows: &[T], f: impl Fn(&T) -> U) -> Vec<U> {
+pub(crate) fn map<T, U>(rows: &[T], f: impl Fn(&T) -> U) -> Vec<U> {
     rows.iter().map(f).collect()
 }
 
-fn i32s(values: &[u32]) -> ArrayRef {
+pub(crate) fn i32s(values: &[u32]) -> ArrayRef {
     Arc::new(Int32Array::from(
         values.iter().map(|value| *value as i32).collect::<Vec<_>>(),
     ))
 }
 
-fn i32_opt(values: &[Option<u32>]) -> ArrayRef {
+pub(crate) fn i32_opt(values: &[Option<u32>]) -> ArrayRef {
     Arc::new(Int32Array::from(
         values
             .iter()
@@ -408,24 +412,32 @@ fn i32_opt(values: &[Option<u32>]) -> ArrayRef {
     ))
 }
 
-fn i64s(values: &[u64]) -> ArrayRef {
+pub(crate) fn i64s(values: &[u64]) -> ArrayRef {
     Arc::new(Int64Array::from(
         values.iter().map(|value| *value as i64).collect::<Vec<_>>(),
     ))
 }
 
-fn utf8(values: &[String]) -> ArrayRef {
+pub(crate) fn utf8(values: &[String]) -> ArrayRef {
     Arc::new(StringArray::from(values.to_vec()))
 }
 
-fn utf8_opt(values: &[Option<String>]) -> ArrayRef {
+pub(crate) fn utf8_opt(values: &[Option<String>]) -> ArrayRef {
     Arc::new(StringArray::from(values.to_vec()))
 }
 
-fn f64_opt(values: &[Option<f64>]) -> ArrayRef {
+pub(crate) fn f64_opt(values: &[Option<f64>]) -> ArrayRef {
     Arc::new(Float64Array::from(values.to_vec()))
 }
 
-fn bool_opt(values: &[Option<bool>]) -> ArrayRef {
+pub(crate) fn bool_opt(values: &[Option<bool>]) -> ArrayRef {
     Arc::new(BooleanArray::from(values.to_vec()))
+}
+
+pub(crate) fn bools(values: &[bool]) -> ArrayRef {
+    Arc::new(BooleanArray::from(values.to_vec()))
+}
+
+pub(crate) fn boolean(name: &str) -> Field {
+    Field::new(name, DataType::Boolean, false)
 }

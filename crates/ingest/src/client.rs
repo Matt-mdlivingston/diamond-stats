@@ -9,6 +9,8 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use diamond_stats_core::api_model::{StatsEnvelope, TeamsEnvelope};
+use diamond_stats_core::game_api::{BoxscoreEnvelope, PlayByPlayEnvelope, ScheduleEnvelope};
+use serde::de::DeserializeOwned;
 use tokio::sync::{Mutex, Semaphore};
 use tokio::time::Instant;
 use tracing::debug;
@@ -16,8 +18,9 @@ use tracing::debug;
 use crate::cache;
 use crate::error::IngestError;
 use crate::urls::{
-    PlayerQuery, SeasonPageQuery, USER_AGENT, backoff, game_log_url, player_season_url,
-    season_stats_url, should_retry_status, teams_url,
+    PlayerQuery, SeasonPageQuery, USER_AGENT, backoff, boxscore_url, game_log_url,
+    play_by_play_url, player_season_url, schedule_date_url, schedule_game_url, season_stats_url,
+    should_retry_status, team_url, teams_url,
 };
 
 /// Operations the ingest pipeline needs from a stats source.
@@ -49,6 +52,38 @@ pub trait StatsApi: Clone + Send + Sync + 'static {
         sport_id: u32,
         season: u16,
     ) -> impl Future<Output = Result<TeamsEnvelope, IngestError>> + Send;
+
+    /// One club, used to learn `sportId` from a `gamePk` schedule payload.
+    fn team(
+        &self,
+        team_id: u32,
+        season: u16,
+    ) -> impl Future<Output = Result<TeamsEnvelope, IngestError>> + Send;
+
+    /// Regular-season schedule for one sport and date.
+    fn schedule_date(
+        &self,
+        sport_id: u32,
+        date: String,
+    ) -> impl Future<Output = Result<ScheduleEnvelope, IngestError>> + Send;
+
+    /// Schedule row for one `gamePk`.
+    fn schedule_game(
+        &self,
+        game_pk: u64,
+    ) -> impl Future<Output = Result<ScheduleEnvelope, IngestError>> + Send;
+
+    /// Box score for one game.
+    fn boxscore(
+        &self,
+        game_pk: u64,
+    ) -> impl Future<Output = Result<BoxscoreEnvelope, IngestError>> + Send;
+
+    /// Play-by-play for one game.
+    fn play_by_play(
+        &self,
+        game_pk: u64,
+    ) -> impl Future<Output = Result<PlayByPlayEnvelope, IngestError>> + Send;
 }
 
 /// Settings for [`HttpStatsClient`].
@@ -142,6 +177,11 @@ impl HttpStatsClient {
             semaphore: Arc::new(Semaphore::new(max_in_flight)),
             config,
         })
+    }
+
+    async fn get_typed<T: DeserializeOwned>(&self, url: &str) -> Result<T, IngestError> {
+        let value = self.get_json(url).await?;
+        serde_json::from_value(value).map_err(IngestError::from)
     }
 
     async fn get_json(&self, url: &str) -> Result<serde_json::Value, IngestError> {
@@ -255,7 +295,35 @@ impl StatsApi for HttpStatsClient {
 
     async fn teams(&self, sport_id: u32, season: u16) -> Result<TeamsEnvelope, IngestError> {
         let url = teams_url(&self.config.base_url, sport_id, season);
-        let value = self.get_json(&url).await?;
-        serde_json::from_value(value).map_err(IngestError::from)
+        self.get_typed(&url).await
+    }
+
+    async fn team(&self, team_id: u32, season: u16) -> Result<TeamsEnvelope, IngestError> {
+        let url = team_url(&self.config.base_url, team_id, season);
+        self.get_typed(&url).await
+    }
+
+    async fn schedule_date(
+        &self,
+        sport_id: u32,
+        date: String,
+    ) -> Result<ScheduleEnvelope, IngestError> {
+        let url = schedule_date_url(&self.config.base_url, sport_id, &date);
+        self.get_typed(&url).await
+    }
+
+    async fn schedule_game(&self, game_pk: u64) -> Result<ScheduleEnvelope, IngestError> {
+        let url = schedule_game_url(&self.config.base_url, game_pk);
+        self.get_typed(&url).await
+    }
+
+    async fn boxscore(&self, game_pk: u64) -> Result<BoxscoreEnvelope, IngestError> {
+        let url = boxscore_url(&self.config.base_url, game_pk);
+        self.get_typed(&url).await
+    }
+
+    async fn play_by_play(&self, game_pk: u64) -> Result<PlayByPlayEnvelope, IngestError> {
+        let url = play_by_play_url(&self.config.base_url, game_pk);
+        self.get_typed(&url).await
     }
 }

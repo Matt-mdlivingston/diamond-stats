@@ -7,7 +7,7 @@ use diamond_stats_core::api_model::{StatsEnvelope, TeamsEnvelope};
 use diamond_stats_core::normalize::{batting_stints, pitching_stints, teams};
 use diamond_stats_core::{LeaderStat, Level, NormalizeCtx, StatGroup};
 use diamond_stats_ingest::{write_batting, write_pitching, write_teams};
-use diamond_stats_query::{GameLogLoad, LeaderRequest, QueryError, StatsStore};
+use diamond_stats_query::{GameLogLoad, LeaderRequest, QueryError, SeasonFilter, StatsStore};
 
 fn fixture(name: &str) -> String {
     let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
@@ -199,6 +199,39 @@ fn player_seasons_show_a_callup_and_a_trade() {
     assert_eq!(naylor.batting.len(), 2);
     let games: u32 = naylor.batting.iter().map(|row| row.games).sum();
     assert_eq!(games, 147);
+
+    let season = store
+        .player_seasons_filtered(
+            701_350,
+            SeasonFilter {
+                season: Some(2025),
+                level: None,
+            },
+        )
+        .unwrap();
+    let levels: Vec<_> = season.batting.iter().map(|row| row.level).collect();
+    assert_eq!(levels, vec![Level::Aaa, Level::Mlb]);
+    let only_mlb = store
+        .player_seasons_filtered(
+            701_350,
+            SeasonFilter {
+                season: Some(2025),
+                level: Some(Level::Mlb),
+            },
+        )
+        .unwrap();
+    assert_eq!(only_mlb.batting.len(), 1);
+    assert_eq!(only_mlb.batting[0].level, Level::Mlb);
+    let no_aa = store
+        .player_seasons_filtered(
+            701_350,
+            SeasonFilter {
+                season: Some(2025),
+                level: Some(Level::Aa),
+            },
+        )
+        .unwrap();
+    assert!(no_aa.is_empty());
 }
 
 #[test]

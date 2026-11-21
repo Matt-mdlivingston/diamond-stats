@@ -1,0 +1,83 @@
+{
+  "copyright": "Copyright 2026 MLB Advanced Media, L.P.  Use of any content on this page acknowledges agreement to the terms posted here http://gdx.mlb.com/components/copyright.txt",
+  "teams": [
+    {
+      "allStarStatus": "N",
+      "id": 1998,
+      "name": "FCL Astros",
+      "link": "/api/v1/teams/1998",
+      "season": 2025,
+      "venue": {
+        "id": 6084,
+        "name": "CACTI Park of the Palm Beaches Complex (HOU)",
+        "link": "/api/v1/venues/6084"
+      },
+      "teamCode": "fas",
+      "fileCode": "t1998",
+      "abbreviation": "F-AST",
+      "teamName": "FCL Astros",
+      "locationName": "West Palm Beach",
+      "firstYearOfPlay": "1977",
+      "league": {
+        "id": 124,
+        "name": "Florida Complex League",
+        "link": "/api/v1/league/124"
+      },
+      "division": {
+        "id": 216,
+        "name": "Florida Complex League East",
+        "link": "/api/v1/divisions/216"
+      },
+      "sport": {
+        "id": 16,
+        "link": "/api/v1/sports/16",
+        "name": "Rookie"
+      },
+      "shortName": "FCL Astros",
+      "parentOrgName": "Houston Astros",
+      "parentOrgId": 117,
+      "franchiseName": "FCL Astros",
+      "clubName": "FCL Astros",
+      "active": true
+    },
+    {
+      "allStarStatus": "N",
+      "id": 5506,
+      "name": "DSL CLE Goryl",
+      "link": "/api/v1/teams/5506",
+      "season": 2025,
+      "venue": {
+        "id": 6107,
+        "name": "Cleveland Guardians DR Complex",
+        "link": "/api/v1/venues/6107"
+      },
+      "teamCode": "dgd",
+      "fileCode": "t5506",
+      "abbreviation": "D-CLG",
+      "teamName": "DSL CLE Goryl",
+      "locationName": "Cleveland",
+      "firstYearOfPlay": "2020",
+      "league": {
+        "id": 130,
+        "name": "Dominican Summer League",
+        "link": "/api/v1/league/130"
+      },
+      "division": {
+        "id": 247,
+        "name": "Dominican Summer League Central",
+        "link": "/api/v1/divisions/247"
+      },
+      "sport": {
+        "id": 16,
+        "link": "/api/v1/sports/16",
+        "name": "Rookie"
+      },
+      "shortName": "DSL CLE Goryl",
+      "parentOrgName": "Cleveland Guardians",
+      "parentOrgId": 114,
+      "franchiseName": "DSL CLE Goryl",
+      "clubName": "DSL CLE Goryl",
+      "active": true
+    }
+  ]
+}

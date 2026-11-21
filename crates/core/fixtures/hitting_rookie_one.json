@@ -1,0 +1,301 @@
+{
+  "copyright": "Copyright 2026 MLB Advanced Media, L.P.  Use of any content on this page acknowledges agreement to the terms posted here http://gdx.mlb.com/components/copyright.txt",
+  "stats": [
+    {
+      "type": {
+        "displayName": "season"
+      },
+      "group": {
+        "displayName": "hitting"
+      },
+      "totalSplits": 1579,
+      "exemptions": [],
+      "splits": [
+        {
+          "season": "2025",
+          "stat": {
+            "age": 23,
+            "gamesPlayed": 1,
+            "groundOuts": 0,
+            "airOuts": 0,
+            "runs": 1,
+            "doubles": 0,
+            "triples": 0,
+            "homeRuns": 0,
+            "strikeOuts": 0,
+            "baseOnBalls": 1,
+            "intentionalWalks": 0,
+            "hits": 2,
+            "hitByPitch": 0,
+            "avg": "1.000",
+            "atBats": 2,
+            "obp": "1.000",
+            "slg": "1.000",
+            "ops": "2.000",
+            "caughtStealing": 0,
+            "stolenBases": 0,
+            "stolenBasePercentage": ".---",
+            "caughtStealingPercentage": ".---",
+            "groundIntoDoublePlay": 0,
+            "numberOfPitches": 16,
+            "plateAppearances": 3,
+            "totalBases": 2,
+            "rbi": 1,
+            "leftOnBase": 0,
+            "sacBunts": 0,
+            "sacFlies": 0,
+            "babip": "1.000",
+            "groundOutsToAirouts": "-.--",
+            "catchersInterference": 0,
+            "atBatsPerHomeRun": "-.--"
+          },
+          "team": {
+            "id": 406,
+            "name": "ACL Brewers",
+            "link": "/api/v1/teams/406"
+          },
+          "player": {
+            "id": 801670,
+            "fullName": "Mike Boeve",
+            "link": "/api/v1/people/801670",
+            "firstName": "Mike",
+            "lastName": "Boeve",
+            "nameSlug": "mike-boeve-801670"
+          },
+          "league": {
+            "id": 121,
+            "name": "ACL",
+            "link": "/api/v1/league/121"
+          },
+          "sport": {
+            "id": 16,
+            "link": "/api/v1/sports/16",
+            "abbreviation": "ROK"
+          },
+          "numTeams": 1,
+          "rank": 1,
+          "position": {
+            "code": "10",
+            "name": "Designated Hitter",
+            "type": "Hitter",
+            "abbreviation": "DH"
+          }
+        }
+      ],
+      "splitsTiedWithOffset": [],
+      "splitsTiedWithLimit": [
+        {
+          "season": "2025",
+          "stat": {
+            "age": 27,
+            "gamesPlayed": 1,
+            "groundOuts": 0,
+            "airOuts": 0,
+            "runs": 1,
+            "doubles": 0,
+            "triples": 1,
+            "homeRuns": 0,
+            "strikeOuts": 0,
+            "baseOnBalls": 0,
+            "intentionalWalks": 0,
+            "hits": 2,
+            "hitByPitch": 1,
+            "avg": "1.000",
+            "atBats": 2,
+            "obp": "1.000",
+            "slg": "2.000",
+            "ops": "3.000",
+            "caughtStealing": 0,
+            "stolenBases": 0,
+            "stolenBasePercentage": ".---",
+            "caughtStealingPercentage": ".---",
+            "groundIntoDoublePlay": 0,
+            "numberOfPitches": 8,
+            "plateAppearances": 3,
+            "totalBases": 4,
+            "rbi": 0,
+            "leftOnBase": 0,
+            "sacBunts": 0,
+            "sacFlies": 0,
+            "babip": "1.000",
+            "groundOutsToAirouts": "-.--",
+            "catchersInterference": 0,
+            "atBatsPerHomeRun": "-.--"
+          },
+          "team": {
+            "id": 5426,
+            "name": "ACL Athletics",
+            "link": "/api/v1/teams/5426"
+          },
+          "player": {
+            "id": 695391,
+            "fullName": "Brett Harris",
+            "link": "/api/v1/people/695391",
+            "firstName": "Brett",
+            "lastName": "Harris",
+            "nameSlug": "brett-harris-695391"
+          },
+          "league": {
+            "id": 121,
+            "name": "ACL",
+            "link": "/api/v1/league/121"
+          },
+          "sport": {
+            "id": 16,
+            "link": "/api/v1/sports/16",
+            "abbreviation": "ROK"
+          },
+          "numTeams": 1,
+          "rank": 1,
+          "position": {
+            "code": "5",
+            "name": "Third Base",
+            "type": "Infielder",
+            "abbreviation": "3B"
+          }
+        },
+        {
+          "season": "2025",
+          "stat": {
+            "age": 24,
+            "gamesPlayed": 1,
+            "groundOuts": 0,
+            "airOuts": 1,
+            "runs": 0,
+            "doubles": 0,
+            "triples": 0,
+            "homeRuns": 0,
+            "strikeOuts": 0,
+            "baseOnBalls": 0,
+            "intentionalWalks": 0,
+            "hits": 1,
+            "hitByPitch": 0,
+            "avg": "1.000",
+            "atBats": 1,
+            "obp": ".500",
+            "slg": "1.000",
+            "ops": "1.500",
+            "caughtStealing": 0,
+            "stolenBases": 0,
+            "stolenBasePercentage": ".---",
+            "caughtStealingPercentage": ".---",
+            "groundIntoDoublePlay": 0,
+            "numberOfPitches": 7,
+            "plateAppearances": 2,
+            "totalBases": 1,
+            "rbi": 1,
+            "leftOnBase": 0,
+            "sacBunts": 0,
+            "sacFlies": 1,
+            "babip": ".500",
+            "groundOutsToAirouts": "0.00",
+            "catchersInterference": 0,
+            "atBatsPerHomeRun": "-.--"
+          },
+          "team": {
+            "id": 1390,
+            "name": "FCL Blue Jays",
+            "link": "/api/v1/teams/1390"
+          },
+          "player": {
+            "id": 677870,
+            "fullName": "Leo Jiménez",
+            "link": "/api/v1/people/677870",
+            "firstName": "Leo",
+            "lastName": "Jimenez",
+            "nameSlug": "leo-jimenez-677870"
+          },
+          "league": {
+            "id": 124,
+            "name": "FCL",
+            "link": "/api/v1/league/124"
+          },
+          "sport": {
+            "id": 16,
+            "link": "/api/v1/sports/16",
+            "abbreviation": "ROK"
+          },
+          "numTeams": 1,
+          "rank": 1,
+          "position": {
+            "code": "6",
+            "name": "Shortstop",
+            "type": "Infielder",
+            "abbreviation": "SS"
+          }
+        },
+        {
+          "season": "2025",
+          "stat": {
+            "age": 24,
+            "gamesPlayed": 1,
+            "groundOuts": 0,
+            "airOuts": 0,
+            "runs": 3,
+            "doubles": 1,
+            "triples": 0,
+            "homeRuns": 0,
+            "strikeOuts": 0,
+            "baseOnBalls": 0,
+            "intentionalWalks": 0,
+            "hits": 3,
+            "hitByPitch": 0,
+            "avg": "1.000",
+            "atBats": 3,
+            "obp": "1.000",
+            "slg": "1.333",
+            "ops": "2.333",
+            "caughtStealing": 0,
+            "stolenBases": 0,
+            "stolenBasePercentage": ".---",
+            "caughtStealingPercentage": ".---",
+            "groundIntoDoublePlay": 0,
+            "numberOfPitches": 12,
+            "plateAppearances": 3,
+            "totalBases": 4,
+            "rbi": 1,
+            "leftOnBase": 0,
+            "sacBunts": 0,
+            "sacFlies": 0,
+            "babip": "1.000",
+            "groundOutsToAirouts": "-.--",
+            "catchersInterference": 0,
+            "atBatsPerHomeRun": "-.--"
+          },
+          "team": {
+            "id": 470,
+            "name": "FCL Pirates",
+            "link": "/api/v1/teams/470"
+          },
+          "player": {
+            "id": 682650,
+            "fullName": "Malcom Nuñez",
+            "link": "/api/v1/people/682650",
+            "firstName": "Malcom",
+            "lastName": "Nuñez",
+            "nameSlug": "malcom-nunez-682650"
+          },
+          "league": {
+            "id": 124,
+            "name": "FCL",
+            "link": "/api/v1/league/124"
+          },
+          "sport": {
+            "id": 16,
+            "link": "/api/v1/sports/16",
+            "abbreviation": "ROK"
+          },
+          "numTeams": 1,
+          "rank": 1,
+          "position": {
+            "code": "5",
+            "name": "Third Base",
+            "type": "Infielder",
+            "abbreviation": "3B"
+          }
+        }
+      ],
+      "playerPool": "ALL"
+    }
+  ]
+}

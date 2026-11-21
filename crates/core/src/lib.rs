@@ -9,6 +9,9 @@
 pub mod api_model;
 pub mod domain;
 pub mod error;
+pub mod game;
+pub mod game_api;
+pub mod game_norm;
 pub mod group;
 pub mod level;
 pub mod normalize;
@@ -19,6 +22,10 @@ pub use domain::{
     ATTRIBUTION_NOTE, BattingStint, GameLogEntry, LeaderStat, MLBAM_TERMS_URL, PitchingStint, Team,
 };
 pub use error::CoreError;
+pub use game::{
+    BoxBattingLine, BoxPitchingLine, Pitch, PitchTracking, PlateAppearance, ScheduledGame,
+    parse_iso_date, pitch_tracking_note,
+};
 pub use group::StatGroup;
 pub use level::{Level, LevelInfo};
 pub use normalize::{NormalizeCtx, SplitDisposition};

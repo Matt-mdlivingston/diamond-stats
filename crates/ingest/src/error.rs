@@ -55,6 +55,12 @@ pub enum IngestError {
     /// Parquet failed to write a file.
     #[error("parquet error: {0}")]
     Parquet(String),
+    /// `schedule?gamePk=` returned no game.
+    #[error("stats API has no game {game_pk}")]
+    GameNotFound {
+        /// `gamePk` that was requested.
+        game_pk: u64,
+    },
     /// A catch-all with context.
     #[error("{0}")]
     Message(String),

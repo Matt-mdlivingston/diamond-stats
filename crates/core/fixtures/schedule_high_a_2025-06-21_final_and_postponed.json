@@ -1,0 +1,172 @@
+{
+  "copyright": "Copyright 2026 MLB Advanced Media, L.P.  Use of any content on this page acknowledges agreement to the terms posted here http://gdx.mlb.com/components/copyright.txt",
+  "totalItems": 2,
+  "totalEvents": 0,
+  "totalGames": 2,
+  "totalGamesInProgress": 0,
+  "dates": [
+    {
+      "date": "2025-06-21",
+      "totalItems": 2,
+      "totalGames": 2,
+      "games": [
+        {
+          "gamePk": 783928,
+          "gameGuid": "3bec1999-e66d-43b3-96a9-152c2664f6cd",
+          "link": "/api/v1.1/game/783928/feed/live",
+          "gameType": "R",
+          "season": "2025",
+          "gameDate": "2025-06-21T22:05:00Z",
+          "officialDate": "2025-06-21",
+          "status": {
+            "abstractGameState": "Final",
+            "codedGameState": "F",
+            "detailedState": "Final",
+            "statusCode": "F",
+            "startTimeTBD": false,
+            "abstractGameCode": "F"
+          },
+          "teams": {
+            "away": {
+              "team": {
+                "id": 573,
+                "name": "Asheville Tourists",
+                "link": "/api/v1/teams/573"
+              },
+              "leagueRecord": {
+                "wins": 31,
+                "losses": 36,
+                "ties": 0,
+                "pct": ".463"
+              },
+              "score": 4,
+              "isWinner": true,
+              "splitSquad": false,
+              "seriesNumber": 12
+            },
+            "home": {
+              "team": {
+                "id": 426,
+                "name": "Wilmington Blue Rocks",
+                "link": "/api/v1/teams/426"
+              },
+              "leagueRecord": {
+                "wins": 30,
+                "losses": 37,
+                "ties": 0,
+                "pct": ".448"
+              },
+              "score": 3,
+              "isWinner": false,
+              "splitSquad": false,
+              "seriesNumber": 12
+            }
+          },
+          "venue": {
+            "id": 2793,
+            "name": "Frawley Stadium",
+            "link": "/api/v1/venues/2793"
+          },
+          "content": {
+            "link": "/api/v1/game/783928/content"
+          },
+          "isTie": false,
+          "gameNumber": 1,
+          "publicFacing": true,
+          "doubleHeader": "N",
+          "gamedayType": "Y",
+          "tiebreaker": "N",
+          "calendarEventID": "44-783928-2025-06-21",
+          "seasonDisplay": "2025",
+          "dayNight": "night",
+          "scheduledInnings": 9,
+          "reverseHomeAwayStatus": false,
+          "inningBreakLength": 120,
+          "gamesInSeries": 6,
+          "seriesGameNumber": 5,
+          "seriesDescription": "Regular Season",
+          "recordSource": "S",
+          "ifNecessary": "N",
+          "ifNecessaryDescription": "Normal Game"
+        },
+        {
+          "gamePk": 789134,
+          "gameGuid": "a973ed7d-48cc-429f-971a-3ca6d3b31a0a",
+          "link": "/api/v1.1/game/789134/feed/live",
+          "gameType": "R",
+          "season": "2025",
+          "gameDate": "2025-06-22T00:20:00Z",
+          "officialDate": "2025-07-24",
+          "rescheduleDate": "2025-07-24T20:10:00Z",
+          "rescheduleGameDate": "2025-07-24",
+          "status": {
+            "abstractGameState": "Final",
+            "codedGameState": "D",
+            "detailedState": "Postponed",
+            "statusCode": "DI",
+            "startTimeTBD": false,
+            "reason": "Inclement Weather",
+            "abstractGameCode": "F"
+          },
+          "teams": {
+            "away": {
+              "team": {
+                "id": 435,
+                "name": "Vancouver Canadians",
+                "link": "/api/v1/teams/435"
+              },
+              "leagueRecord": {
+                "wins": 51,
+                "losses": 41,
+                "ties": 0,
+                "pct": ".554"
+              },
+              "splitSquad": false,
+              "seriesNumber": 12
+            },
+            "home": {
+              "team": {
+                "id": 461,
+                "name": "Eugene Emeralds",
+                "link": "/api/v1/teams/461"
+              },
+              "leagueRecord": {
+                "wins": 52,
+                "losses": 40,
+                "ties": 0,
+                "pct": ".565"
+              },
+              "splitSquad": false,
+              "seriesNumber": 12
+            }
+          },
+          "venue": {
+            "id": 4109,
+            "name": "PK Park",
+            "link": "/api/v1/venues/4109"
+          },
+          "content": {
+            "link": "/api/v1/game/789134/content"
+          },
+          "gameNumber": 1,
+          "publicFacing": true,
+          "doubleHeader": "N",
+          "gamedayType": "Y",
+          "tiebreaker": "N",
+          "calendarEventID": "44-789134-2025-06-21",
+          "seasonDisplay": "2025",
+          "dayNight": "night",
+          "scheduledInnings": 7,
+          "reverseHomeAwayStatus": true,
+          "inningBreakLength": 120,
+          "gamesInSeries": 6,
+          "seriesGameNumber": 5,
+          "seriesDescription": "Regular Season",
+          "recordSource": "S",
+          "ifNecessary": "N",
+          "ifNecessaryDescription": "Normal Game"
+        }
+      ]
+    }
+  ]
+}
